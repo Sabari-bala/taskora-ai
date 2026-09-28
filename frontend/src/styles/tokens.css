@@ -1,0 +1,29 @@
+:root {
+  /* Paper & Ink */
+  --paper-50:  #FBFBF9;
+  --paper-100: #FFFFFF;
+  --paper-150: #F5F5F2;
+  --paper-200: #EDEDE8;
+  --paper-300: #E0DFD8;
+  --paper-400: #C9C8BF;
+
+  --ink-500: #8A8A83;
+  --ink-600: #52524D;
+  --ink-800: #1A1A18;
+  --ink-900: #0F0F0E;
+
+  /* Signal */
+  --signal-50:  #EEF1FF;
+  --signal-100: #DDE3FF;
+  --signal-300: #97A5FF;
+  --signal-500: #4F5EE8;
+  --signal-600: #3B48CC;
+  --signal-700: #2E39A3;
+  --signal-900: #1A2159;
+
+  /* Ember */
+  --ember-50:  #FFF1EC;
+  --ember-100: #FFE1D6;
+  --ember-500: #FF6B42;
+  --ember-600: #E5502C;
+}

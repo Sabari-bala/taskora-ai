@@ -1,0 +1,8 @@
+"""API v1 URL configuration."""
+from django.urls import path
+
+from common.health import health_check
+
+urlpatterns = [
+    path("health/", health_check, name="health"),
+]

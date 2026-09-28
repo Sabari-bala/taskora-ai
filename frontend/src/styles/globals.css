@@ -1,0 +1,17 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: var(--ink-800);
+  }
+  body {
+    margin: 0;
+    background: var(--paper-50);
+  }
+}
