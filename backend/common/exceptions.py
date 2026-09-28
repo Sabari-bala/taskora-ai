@@ -4,6 +4,7 @@ Normalises all error responses to a consistent shape:
 
     {"detail": "...", "errors": {"field": ["..."]}}
 """
+
 import logging
 
 from rest_framework.views import exception_handler as drf_exception_handler

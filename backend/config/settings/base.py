@@ -2,13 +2,14 @@
 Base settings — shared across all environments.
 Environment-specific overrides live in dev.py, prod.py, test.py.
 """
+
 from pathlib import Path
 
 import environ
 
 # ─── Paths ──────────────────────────────────────
-BASE_DIR = Path(__file__).resolve().parent.parent.parent   # backend/
-PROJECT_ROOT = BASE_DIR.parent                             # taskora-ai/
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # backend/
+PROJECT_ROOT = BASE_DIR.parent  # taskora-ai/
 
 # ─── Environment ────────────────────────────────
 env = environ.Env(

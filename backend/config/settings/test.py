@@ -1,4 +1,5 @@
 """Test settings — fast, no external services."""
+
 from .base import *  # noqa: F403
 
 DEBUG = False
