@@ -102,6 +102,13 @@ DATABASES = {
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
+# SQLite-only tuning: WAL mode + busy timeout avoid "database is locked"
+# when concurrent requests (e.g. /refresh/ + /workspaces/) hit the DB.
+if "sqlite3" in DATABASES["default"].get("ENGINE", ""):
+    DATABASES["default"].setdefault("OPTIONS", {})
+    DATABASES["default"]["OPTIONS"]["timeout"] = 20
+    DATABASES["default"]["OPTIONS"]["init_command"] = "PRAGMA journal_mode=WAL;"
+
 # ─── Password validation ────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

@@ -130,7 +130,9 @@ class RefreshView(APIView):
         # ROTATE_REFRESH_TOKENS=True → blacklist happens automatically
         try:
             old_refresh.blacklist()
-        except AttributeError:
+        except Exception:
+            # Blacklisting is best-effort cleanup. A race, a locked SQLite row,
+            # or an already-blacklisted token must never break the refresh.
             pass  # blacklist app might be disabled; ignore gracefully
 
         user_id = old_refresh.get("user_id")
@@ -164,7 +166,7 @@ class LogoutView(APIView):
         if raw_refresh:
             try:
                 RefreshToken(raw_refresh).blacklist()
-            except TokenError:
+            except Exception:
                 pass
 
         response = Response(
