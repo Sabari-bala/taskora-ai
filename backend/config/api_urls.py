@@ -9,4 +9,5 @@ urlpatterns = [
     path("", include("apps.workspaces.urls")),
     path("", include("apps.projects.urls")),
     path("", include("apps.tasks.urls")),
+    path("", include("apps.notifications.urls")),
 ]
