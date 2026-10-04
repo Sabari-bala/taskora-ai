@@ -86,9 +86,7 @@ export default function ProjectDetailPage() {
     const targetLength = board[newStatus]?.length || 0;
     reorderMutation.mutate(
       { id: taskId, status: newStatus, position: targetLength },
-      {
-        onError: () => toast('Could not move task. Reverted.', { variant: 'error' }),
-      }
+      { onError: () => toast('Could not move task. Reverted.', { variant: 'error' }) }
     );
   }
 
@@ -106,8 +104,8 @@ export default function ProjectDetailPage() {
   const totalTasks = Object.values(board || {}).reduce((sum, l) => sum + l.length, 0);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="px-6 lg:px-8 py-5 border-b border-paper-300 bg-paper-100">
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col overflow-hidden">
+      <div className="px-6 lg:px-8 py-5 border-b border-paper-300 bg-paper-100 shrink-0">
         <Link
           to="/projects"
           className="inline-flex items-center gap-1 text-body-sm text-ink-500 hover:text-ink-800 transition-colors mb-2"
@@ -135,8 +133,8 @@ export default function ProjectDetailPage() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex-1 overflow-x-auto overflow-y-hidden">
-          <div className="flex gap-3 p-6 lg:p-8 min-h-full">
+        <div className="flex-1 min-h-0 overflow-x-auto">
+          <div className="flex gap-3 p-6 lg:p-8 h-full min-h-0">
             {TASK_STATUSES.map((s) => (
               <KanbanColumn
                 key={s.value}

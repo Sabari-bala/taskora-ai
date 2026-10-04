@@ -1,12 +1,6 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 import { clearAccessToken, getAccessToken, setAccessToken } from './storage';
 
-/* ─── CSRF helper ──────────────────────────────
- * Django sets a `csrftoken` cookie whenever we hit an endpoint
- * decorated with `ensure_csrf_cookie` (our login view).
- * We read it here and echo it back in the X-CSRFToken header
- * so csrf_protect on /auth/refresh/ and /auth/logout/ is satisfied.
- */
 function getCsrfToken() {
   const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
   return match ? decodeURIComponent(match[1]) : null;
@@ -18,29 +12,38 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-/* ─── Request: attach access token + CSRF ────── */
+/* Attach access token + CSRF header on every request */
 api.interceptors.request.use((config) => {
   const token = getAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   const method = (config.method || 'get').toLowerCase();
   if (['post', 'put', 'patch', 'delete'].includes(method)) {
     const csrf = getCsrfToken();
-    if (csrf) {
-      config.headers['X-CSRFToken'] = csrf;
-    }
+    if (csrf) config.headers['X-CSRFToken'] = csrf;
   }
-
   return config;
 });
 
-/* ─── Response: on 401, refresh once and retry ──
- * Queue concurrent 401s so we don't fire five refresh calls at once.
+/* ── Shared in-flight refresh promise ───────────────
+ * ANY caller — the bootstrap effect, the 401 interceptor,
+ * a future websocket reconnect — shares one refresh call.
+ * This is what prevents StrictMode's double-invoke (and
+ * any other concurrency) from racing two rotations.
  */
 let refreshPromise = null;
 
+export function refreshTokens() {
+  if (!refreshPromise) {
+    refreshPromise = api
+      .post('/auth/refresh/')
+      .finally(() => { refreshPromise = null; });
+  }
+  return refreshPromise;
+}
+
+/* On 401, refresh once and retry the original request */
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -59,13 +62,7 @@ api.interceptors.response.use(
     original._retry = true;
 
     try {
-      if (!refreshPromise) {
-        refreshPromise = api
-          .post('/auth/refresh/')
-          .finally(() => { refreshPromise = null; });
-      }
-
-      const { data } = await refreshPromise;
+      const { data } = await refreshTokens();
       setAccessToken(data.access);
       original.headers.Authorization = `Bearer ${data.access}`;
       return api(original);

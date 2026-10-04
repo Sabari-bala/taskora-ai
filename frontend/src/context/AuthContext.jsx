@@ -1,31 +1,22 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { authApi } from '../features/auth/api';
+import { refreshTokens } from '../lib/axios';
 import { clearAccessToken, setAccessToken } from '../lib/storage';
 
 export const AuthContext = createContext(null);
 
-/**
- * AuthProvider — single source of truth for "who is logged in".
- *
- * Boot sequence:
- *   1. Try POST /auth/refresh/ (refresh cookie is HttpOnly, so this works
- *      even on hard refresh when the access token was lost)
- *   2. If it succeeds, we get a fresh access token + user, and the app renders
- *   3. If it fails, we render the app as "logged out"
- *
- * The user is only "loading" during that brief boot check.
- */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
 
-  /* ── Silent refresh on mount ─────────────────── */
   useEffect(() => {
     let cancelled = false;
 
     async function bootstrap() {
       try {
-        const data = await authApi.refresh();
+        // Shared singleton: StrictMode's second invoke reuses the
+        // first call's in-flight promise instead of racing it.
+        const { data } = await refreshTokens();
         if (cancelled) return;
         setAccessToken(data.access);
         setUser(data.user);
@@ -42,8 +33,6 @@ export function AuthProvider({ children }) {
     bootstrap();
     return () => { cancelled = true; };
   }, []);
-
-  /* ── Actions ─────────────────────────────────── */
 
   const login = useCallback(async ({ email, password }) => {
     const data = await authApi.login({ email, password });
@@ -63,21 +52,14 @@ export function AuthProvider({ children }) {
     try {
       await authApi.logout();
     } catch {
-      // Even if the server call fails, we still clear local state.
+      // clear local state regardless
     }
     clearAccessToken();
     setUser(null);
   }, []);
 
   const value = useMemo(
-    () => ({
-      user,
-      isAuthenticated: !!user,
-      isBootstrapping,
-      login,
-      register,
-      logout,
-    }),
+    () => ({ user, isAuthenticated: !!user, isBootstrapping, login, register, logout }),
     [user, isBootstrapping, login, register, logout]
   );
 
