@@ -162,6 +162,7 @@ export default function ProjectDetailPage() {
         open={createModal.open}
         onOpenChange={(open) => setCreateModal({ ...createModal, open })}
         status={createModal.status}
+        workspaceId={project.workspace}
         onSubmit={handleCreateTask}
         isSubmitting={createMutation.isPending}
       />

@@ -30,10 +30,11 @@ class TaskListSerializer(serializers.ModelSerializer):
 class TaskDetailSerializer(TaskListSerializer):
     created_by = UserSerializer(read_only=True)
     subtask_count = serializers.SerializerMethodField()
+    workspace = serializers.UUIDField(source='project.workspace_id', read_only=True)
 
     class Meta(TaskListSerializer.Meta):
         fields = TaskListSerializer.Meta.fields + [
-            'description', 'project', 'created_by',
+            'description', 'project', 'workspace', 'created_by',
             'milestone', 'parent_task', 'completed_at', 'subtask_count',
         ]
 

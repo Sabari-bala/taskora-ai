@@ -2,13 +2,22 @@ import { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Modal } from '../ui/Modal';
+import { AssigneePicker } from './AssigneePicker';
 import { TASK_PRIORITIES } from '../../lib/constants';
 
-export function TaskCreateModal({ open, onOpenChange, status, onSubmit, isSubmitting }) {
+export function TaskCreateModal({
+  open,
+  onOpenChange,
+  status,
+  workspaceId,
+  onSubmit,
+  isSubmitting,
+}) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('medium');
   const [dueDate, setDueDate] = useState('');
+  const [assignee, setAssignee] = useState(null);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -19,17 +28,19 @@ export function TaskCreateModal({ open, onOpenChange, status, onSubmit, isSubmit
       priority,
       status,
       due_date: dueDate || null,
+      assignee: assignee?.id || null,
     });
   }
 
-  function handleClose(open) {
-    if (!open) {
+  function handleClose(nextOpen) {
+    if (!nextOpen) {
       setTitle('');
       setDescription('');
       setPriority('medium');
       setDueDate('');
+      setAssignee(null);
     }
-    onOpenChange(open);
+    onOpenChange(nextOpen);
   }
 
   return (
@@ -78,6 +89,15 @@ export function TaskCreateModal({ open, onOpenChange, status, onSubmit, isSubmit
             label="Due date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-body-sm font-medium text-ink-800">Assignee</label>
+          <AssigneePicker
+            workspaceId={workspaceId}
+            value={assignee}
+            onChange={setAssignee}
           />
         </div>
 

@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Trash2 } from 'lucide-react';
 import { Drawer } from '../ui/Drawer';
-import { Button } from '../ui/Button';
 import { Avatar } from '../ui/Avatar';
 import { Spinner } from '../ui/Spinner';
 import { CommentsList } from './CommentsList';
 import { CommentComposer } from './CommentComposer';
 import { ActivityTimeline } from './ActivityTimeline';
+import { AssigneePicker } from './AssigneePicker';
 import { StatusPill, PriorityPill } from '../../features/tasks/pills';
 import {
   useTask,
@@ -18,15 +17,17 @@ import {
   useAddComment,
 } from '../../features/tasks/mutations';
 import { useAuth } from '../../hooks/useAuth';
+import { useWorkspace } from '../../hooks/useWorkspace';
 import { useToast } from '../ui/Toast';
 import {
   TASK_STATUSES,
   TASK_PRIORITIES,
 } from '../../lib/constants';
-import { cn, formatDate } from '../../lib/utils';
+import { formatDate } from '../../lib/utils';
 
 export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
   const { user } = useAuth();
+  const { current: currentWorkspace } = useWorkspace();
   const toast = useToast();
   const enabled = open && !!taskId;
 
@@ -48,6 +49,13 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
 
   const comments = commentsPage?.results || [];
 
+  /* Fallback chain — we only need a valid workspace UUID here.
+   * 1. Whatever the task detail endpoint returned (preferred).
+   * 2. The currently-selected workspace (safe because every task the user
+   *    is looking at belongs to a workspace they're a member of, and in
+   *    our UI they're already inside one). */
+  const resolvedWorkspaceId = task?.workspace || currentWorkspace?.id;
+
   function updateField(field, value) {
     updateMutation.mutate(
       { id: taskId, [field]: value },
@@ -55,7 +63,7 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
     );
   }
 
-  async function handleTitleBlur() {
+  function handleTitleBlur() {
     if (!task || titleDraft === task.title) return;
     if (!titleDraft.trim()) {
       setTitleDraft(task.title);
@@ -64,7 +72,7 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
     updateField('title', titleDraft.trim());
   }
 
-  async function handleDescBlur() {
+  function handleDescBlur() {
     if (!task) return;
     if ((descDraft || '') === (task.description || '')) return;
     updateField('description', descDraft);
@@ -90,7 +98,9 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
           <div className="sticky top-0 bg-paper-100 border-b border-paper-200 px-6 py-4 flex items-start justify-between gap-4 z-10">
             <div className="flex-1 min-w-0">
               <p className="text-caption font-mono text-ink-500 mb-2">
-                {task.project?.key ? `${task.project.key}-${task.id.slice(0, 6).toUpperCase()}` : task.id.slice(0, 8)}
+                {task.project?.key
+                  ? `${task.project.key}-${task.id.slice(0, 6).toUpperCase()}`
+                  : task.id.slice(0, 8)}
               </p>
               <input
                 value={titleDraft}
@@ -113,7 +123,6 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
           {/* Body */}
           <div className="flex-1 overflow-y-auto">
             <div className="px-6 py-5 space-y-6">
-              {/* Metadata grid */}
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Status">
                   <select
@@ -140,18 +149,11 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                 </Field>
 
                 <Field label="Assignee">
-                  <div className="flex items-center gap-2 h-9 px-2 rounded-md border border-paper-300 bg-paper-100">
-                    {task.assignee ? (
-                      <>
-                        <Avatar name={task.assignee.display_name} src={task.assignee.avatar} size="xs" />
-                        <span className="text-body-sm text-ink-800 truncate">
-                          {task.assignee.display_name}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-body-sm text-ink-500">Unassigned</span>
-                    )}
-                  </div>
+                  <AssigneePicker
+                    workspaceId={resolvedWorkspaceId}
+                    value={task.assignee}
+                    onChange={(user) => updateField('assignee', user?.id || null)}
+                  />
                 </Field>
 
                 <Field label="Due date">
@@ -167,6 +169,16 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
               <div className="flex items-center gap-2 flex-wrap">
                 <StatusPill status={task.status} />
                 <PriorityPill priority={task.priority} />
+                {task.assignee && (
+                  <span className="inline-flex items-center gap-1.5 text-caption text-ink-600">
+                    <Avatar
+                      name={task.assignee.display_name}
+                      src={task.assignee.avatar}
+                      size="xs"
+                    />
+                    {task.assignee.display_name}
+                  </span>
+                )}
                 {task.estimate_hours && (
                   <span className="text-caption text-ink-500">
                     {task.estimate_hours}h estimate
@@ -179,7 +191,6 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                 )}
               </div>
 
-              {/* Description */}
               <div>
                 <p className="text-overline text-ink-500 mb-2">DESCRIPTION</p>
                 <textarea
@@ -191,7 +202,6 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                 />
               </div>
 
-              {/* Comments */}
               <div>
                 <p className="text-overline text-ink-500 mb-3">
                   COMMENTS · {comments.length}
@@ -205,7 +215,6 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                 </div>
               </div>
 
-              {/* Activity */}
               <div>
                 <p className="text-overline text-ink-500 mb-3">ACTIVITY</p>
                 <ActivityTimeline activities={activity || []} />
