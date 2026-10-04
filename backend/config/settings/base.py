@@ -43,10 +43,13 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS: list[str] = [
-    # Populated in Phase 5+ (accounts, workspaces, projects, tasks, notifications, analytics, ai)
+    "apps.accounts",
+    "apps.workspaces",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
+AUTH_USER_MODEL = "accounts.User"
 
 # ─── Middleware ─────────────────────────────────
 MIDDLEWARE = [
