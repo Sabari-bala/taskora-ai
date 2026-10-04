@@ -1,5 +1,5 @@
-:root {
-  /* Paper & Ink */
+﻿:root {
+  /* ─── Paper & Ink ──────────────────────────── */
   --paper-50:  #FBFBF9;
   --paper-100: #FFFFFF;
   --paper-150: #F5F5F2;
@@ -12,7 +12,7 @@
   --ink-800: #1A1A18;
   --ink-900: #0F0F0E;
 
-  /* Signal */
+  /* ─── Signal (primary action) ──────────────── */
   --signal-50:  #EEF1FF;
   --signal-100: #DDE3FF;
   --signal-300: #97A5FF;
@@ -21,9 +21,28 @@
   --signal-700: #2E39A3;
   --signal-900: #1A2159;
 
-  /* Ember */
+  /* ─── Ember (AI signature) ─────────────────── */
   --ember-50:  #FFF1EC;
   --ember-100: #FFE1D6;
   --ember-500: #FF6B42;
   --ember-600: #E5502C;
+
+  /* ─── Semantic ─────────────────────────────── */
+  --success: #0F9D58; --success-bg: #E6F4EA; --success-text: #0A6B3C;
+  --warning: #F5A623; --warning-bg: #FEF3E0; --warning-text: #8A5A0A;
+  --danger:  #E5484D; --danger-bg:  #FDEBEC; --danger-text:  #992124;
+  --info:    #0F7CC4; --info-bg:    #E5F2FB; --info-text:    #0A4F80;
+
+  /* ─── Status colours ───────────────────────── */
+  --status-backlog:      var(--ink-500);
+  --status-todo:         var(--signal-500);
+  --status-in_progress:  #F5A623;
+  --status-review:       #7C5CFF;
+  --status-done:         #0F9D58;
+
+  /* ─── Priority colours ─────────────────────── */
+  --priority-low:    var(--ink-500);
+  --priority-medium: var(--info);
+  --priority-high:   var(--warning);
+  --priority-urgent: var(--danger);
 }
