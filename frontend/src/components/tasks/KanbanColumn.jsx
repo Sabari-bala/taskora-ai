@@ -1,3 +1,4 @@
+import { useDroppable } from '@dnd-kit/core';
 import { Plus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { STATUS_COLOR } from '../../lib/constants';
@@ -11,6 +12,8 @@ export function KanbanColumn({
   onTaskClick,
   onAddClick,
 }) {
+  const { setNodeRef, isOver } = useDroppable({ id: status });
+
   return (
     <div className="flex flex-col shrink-0 w-[300px]">
       <div className="flex items-center gap-2 px-2 mb-3">
@@ -35,10 +38,24 @@ export function KanbanColumn({
         </button>
       </div>
 
-      <div className="flex-1 bg-paper-150 rounded-xl p-2 space-y-2 min-h-[200px]">
+      <div
+        ref={setNodeRef}
+        className={cn(
+          'flex-1 rounded-xl p-2 space-y-2 min-h-[200px] transition-colors',
+          'bg-paper-150',
+          isOver && 'bg-signal-50 ring-2 ring-signal-500 ring-inset'
+        )}
+      >
         {tasks.length === 0 ? (
-          <div className="border-2 border-dashed border-paper-300 rounded-md p-4 text-center">
-            <p className="text-caption text-ink-500">No cards yet</p>
+          <div
+            className={cn(
+              'border-2 border-dashed border-paper-300 rounded-md p-4 text-center',
+              isOver && 'border-signal-500'
+            )}
+          >
+            <p className="text-caption text-ink-500">
+              {isOver ? 'Drop here' : 'No cards yet'}
+            </p>
           </div>
         ) : (
           tasks.map((task) => (
