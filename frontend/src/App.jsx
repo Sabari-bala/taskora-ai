@@ -1,12 +1,27 @@
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { AuthLayout } from './layouts/AuthLayout';
+import { ProtectedRoute } from './routes/ProtectedRoute';
+import { LoginPage } from './features/auth/LoginPage';
+import { RegisterPage } from './features/auth/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+
 export default function App() {
   return (
-    <div className="min-h-screen bg-paper-50 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-semibold text-ink-900">Taskora AI</h1>
-        <p className="mt-2 text-ink-600">
-          Frontend is running. Backend comes next.
-        </p>
-      </div>
-    </div>
-  )
+    <Routes>
+      {/* Public */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Route>
+
+      {/* Protected */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+      </Route>
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
