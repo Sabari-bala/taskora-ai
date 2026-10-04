@@ -46,6 +46,9 @@ LOCAL_APPS: list[str] = [
     "apps.accounts",
     "apps.workspaces",
     "apps.projects",
+    "apps.tasks",
+    "apps.notifications",
+    "apps.ai",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
