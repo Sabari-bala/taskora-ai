@@ -11,4 +11,5 @@ urlpatterns = [
     path("", include("apps.tasks.urls")),
     path("", include("apps.notifications.urls")),
     path("", include("apps.analytics.urls")),
+    path("", include("apps.ai.urls")),
 ]
