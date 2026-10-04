@@ -65,8 +65,14 @@
     100% { background-position:  200% 0; }
   }
 
+  @keyframes taskora-slide-in {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(0); }
+  }
+
   .animate-fade-in   { animation: taskora-fade-in  180ms cubic-bezier(.2,.8,.2,1); }
   .animate-slide-up  { animation: taskora-slide-up 180ms cubic-bezier(.2,.8,.2,1); }
+  .animate-slide-in  { animation: taskora-slide-in 220ms cubic-bezier(.2,.8,.2,1); }
 
   .skeleton {
     background: linear-gradient(

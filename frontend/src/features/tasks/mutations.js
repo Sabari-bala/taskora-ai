@@ -1,10 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { tasksApi } from './api';
 
-/**
- * Reorder a task between columns with optimistic update.
- * On error, the board snaps back to its previous state.
- */
 export function useReorderTask(projectId) {
   const qc = useQueryClient();
   const key = ['board', projectId];
@@ -50,6 +46,39 @@ export function useCreateTask(projectId) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['board', projectId] });
       qc.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}
+
+export function useUpdateTask() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ...data }) => tasksApi.update(id, data),
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ['task', vars.id] });
+      qc.invalidateQueries({ queryKey: ['task-activity', vars.id] });
+      qc.invalidateQueries({ queryKey: ['board'] });
+    },
+  });
+}
+
+export function useDeleteTask() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => tasksApi.update(id, { status: 'backlog' }) && null,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['board'] });
+    },
+  });
+}
+
+export function useAddComment(taskId) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body) => tasksApi.addComment(taskId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['task-comments', taskId] });
+      qc.invalidateQueries({ queryKey: ['task-activity', taskId] });
     },
   });
 }

@@ -14,6 +14,7 @@ import { useCreateTask, useReorderTask } from '../tasks/mutations';
 import { KanbanColumn } from '../../components/tasks/KanbanColumn';
 import { TaskCard } from '../../components/tasks/TaskCard';
 import { TaskCreateModal } from '../../components/tasks/TaskCreateModal';
+import { TaskDetailDrawer } from '../../components/tasks/TaskDetailDrawer';
 import { Card } from '../../components/ui/Card';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
@@ -31,6 +32,7 @@ export default function ProjectDetailPage() {
 
   const [activeTask, setActiveTask] = useState(null);
   const [createModal, setCreateModal] = useState({ open: false, status: 'backlog' });
+  const [detailTaskId, setDetailTaskId] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -142,6 +144,7 @@ export default function ProjectDetailPage() {
                 label={s.label}
                 projectKey={project.key}
                 tasks={board?.[s.value] || []}
+                onTaskClick={(task) => setDetailTaskId(task.id)}
                 onAddClick={() => setCreateModal({ open: true, status: s.value })}
               />
             ))}
@@ -151,11 +154,7 @@ export default function ProjectDetailPage() {
         <DragOverlay dropAnimation={null}>
           {activeTask ? (
             <div className="w-[300px]">
-              <TaskCard
-                task={activeTask}
-                projectKey={project.key}
-                overlay
-              />
+              <TaskCard task={activeTask} projectKey={project.key} overlay />
             </div>
           ) : null}
         </DragOverlay>
@@ -167,6 +166,12 @@ export default function ProjectDetailPage() {
         status={createModal.status}
         onSubmit={handleCreateTask}
         isSubmitting={createMutation.isPending}
+      />
+
+      <TaskDetailDrawer
+        taskId={detailTaskId}
+        open={!!detailTaskId}
+        onOpenChange={(open) => { if (!open) setDetailTaskId(null); }}
       />
     </div>
   );
