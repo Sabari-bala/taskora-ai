@@ -10,6 +10,7 @@ from apps.workspaces.models import WorkspaceMember
 
 from .comment_serializers import TaskCommentSerializer
 from .comment_services import create_comment
+from .models import TaskComment
 
 
 def _role(user, workspace):

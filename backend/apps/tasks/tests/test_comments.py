@@ -148,6 +148,8 @@ class TestCommentEditDelete:
         assert c.body == "new"
 
     def test_non_author_cannot_edit(self, api, task, owner, member_user):
+        from apps.workspaces.services import add_member
+        add_member(workspace=task.project.workspace, user=member_user)
         c = TaskComment.objects.create(task=task, author=owner, body="x")
         access = str(RefreshToken.for_user(member_user).access_token)
         api.credentials(HTTP_AUTHORIZATION=f"Bearer {access}")
@@ -165,6 +167,8 @@ class TestCommentEditDelete:
         assert not TaskComment.objects.filter(id=c.id).exists()
 
     def test_non_author_cannot_delete(self, api, task, owner, member_user):
+        from apps.workspaces.services import add_member
+        add_member(workspace=task.project.workspace, user=member_user)
         c = TaskComment.objects.create(task=task, author=owner, body="x")
         access = str(RefreshToken.for_user(member_user).access_token)
         api.credentials(HTTP_AUTHORIZATION=f"Bearer {access}")
