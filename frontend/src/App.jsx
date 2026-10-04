@@ -5,6 +5,8 @@ import { ProtectedRoute } from './routes/ProtectedRoute';
 import { LoginPage } from './features/auth/LoginPage';
 import { RegisterPage } from './features/auth/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
+import ProjectsPage from './features/projects/ProjectsPage';
+import ProjectDetailPage from './features/projects/ProjectDetailPage';
 
 export default function App() {
   return (
@@ -18,6 +20,8 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/projects/:id" element={<ProjectDetailPage />} />
         </Route>
       </Route>
 
