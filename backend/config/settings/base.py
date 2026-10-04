@@ -230,3 +230,10 @@ REFRESH_COOKIE_SECURE = env.bool("REFRESH_COOKIE_SECURE", default=False)
 REFRESH_COOKIE_MAX_AGE = int(
     SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds()
 )
+
+# ─── AI Configuration ───────────────────────────
+AI_PROVIDER = env("AI_PROVIDER", default="groq")
+GROQ_API_KEY = env("GROQ_API_KEY", default="")
+GROQ_MODEL = env("GROQ_MODEL", default="llama-3.3-70b-versatile")
+AI_REQUEST_TIMEOUT_SECONDS = env.int("AI_REQUEST_TIMEOUT_SECONDS", default=20)
+AI_RATE_LIMIT_PER_HOUR = env.int("AI_RATE_LIMIT_PER_HOUR", default=30)
