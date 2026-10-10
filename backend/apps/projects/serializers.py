@@ -1,4 +1,4 @@
-from rest_framework import serializers
+﻿from rest_framework import serializers
 
 from apps.accounts.serializers import UserSerializer
 
@@ -28,16 +28,17 @@ class ProjectListSerializer(serializers.ModelSerializer):
     lead = UserSerializer(read_only=True)
     task_count = serializers.IntegerField(read_only=True, default=0)
     completed_task_count = serializers.IntegerField(read_only=True, default=0)
+    workspace = serializers.UUIDField(read_only=True)
 
     class Meta:
         model = Project
         fields = [
             'id', 'name', 'key', 'description', 'status',
-            'lead', 'start_date', 'due_date',
+            'workspace', 'lead', 'start_date', 'due_date',
             'task_count', 'completed_task_count',
             'created_at', 'updated_at',
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'workspace', 'created_at', 'updated_at']
 
 
 class ProjectDetailSerializer(ProjectListSerializer):
