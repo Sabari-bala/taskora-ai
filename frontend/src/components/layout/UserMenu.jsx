@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LogOut, User as UserIcon, Settings } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Avatar } from '../ui/Avatar';
@@ -7,9 +8,15 @@ import { cn } from '../../lib/utils';
 
 export function UserMenu() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   if (!user) return null;
+
+  function go(path) {
+    setOpen(false);
+    navigate(path);
+  }
 
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
@@ -45,11 +52,17 @@ export function UserMenu() {
             <p className="text-caption text-ink-500 truncate">{user.email}</p>
           </div>
           <DropdownMenu.Separator className="h-px bg-paper-200 my-1" />
-          <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 rounded text-body-sm text-ink-600 hover:bg-paper-150 outline-none cursor-pointer">
+          <DropdownMenu.Item
+            onSelect={() => go('/settings')}
+            className="flex items-center gap-2 px-3 py-2 rounded text-body-sm text-ink-600 hover:bg-paper-150 outline-none cursor-pointer"
+          >
             <UserIcon size={14} />
             Profile
           </DropdownMenu.Item>
-          <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 rounded text-body-sm text-ink-600 hover:bg-paper-150 outline-none cursor-pointer">
+          <DropdownMenu.Item
+            onSelect={() => go('/settings')}
+            className="flex items-center gap-2 px-3 py-2 rounded text-body-sm text-ink-600 hover:bg-paper-150 outline-none cursor-pointer"
+          >
             <Settings size={14} />
             Settings
           </DropdownMenu.Item>

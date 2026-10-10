@@ -7,6 +7,8 @@ import { RegisterPage } from './features/auth/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ProjectsPage from './features/projects/ProjectsPage';
 import ProjectDetailPage from './features/projects/ProjectDetailPage';
+import MyTasksPage from './features/tasks/MyTasksPage';
+import SettingsPage from './features/settings/SettingsPage';
 
 export default function App() {
   return (
@@ -20,8 +22,10 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/tasks" element={<MyTasksPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/:id" element={<ProjectDetailPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
 

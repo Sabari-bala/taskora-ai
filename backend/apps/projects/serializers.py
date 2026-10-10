@@ -41,10 +41,8 @@ class ProjectListSerializer(serializers.ModelSerializer):
 
 
 class ProjectDetailSerializer(ProjectListSerializer):
-    workspace = serializers.UUIDField(read_only=True)
-
     class Meta(ProjectListSerializer.Meta):
-        fields = ProjectListSerializer.Meta.fields + ['workspace']
+        fields = ProjectListSerializer.Meta.fields
 
 
 class ProjectWriteSerializer(serializers.ModelSerializer):

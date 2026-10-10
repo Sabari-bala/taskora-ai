@@ -8,13 +8,24 @@ import { useWorkspaceMembers } from '../../features/workspaces/useWorkspaceMembe
 
 /**
  * Popover dropdown for choosing a task assignee.
- * Lists all members of the workspace; filters as you type.
- * Pass `null` to clear the assignee.
+ *
+ * IMPORTANT: when this picker is rendered inside a Radix Dialog (Modal or
+ * Drawer), Radix blocks pointer events outside the dialog tree. A plain
+ * Popover.Portal renders to document.body — which is outside — so clicks
+ * on the dropdown silently do nothing. We pass `container` to render the
+ * popover INSIDE the dialog whenever one is present.
  */
 export function AssigneePicker({ workspaceId, value, onChange, disabled }) {
   const { data: members, isLoading } = useWorkspaceMembers(workspaceId);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+
+  /* The Modal and Drawer both render Dialog.Content with this id.
+   * When there is no dialog, we let Radix use the default (body). */
+  const portalContainer =
+    typeof document !== 'undefined'
+      ? document.getElementById('taskora-dialog-content')
+      : undefined;
 
   const filtered = useMemo(() => {
     const list = members || [];
@@ -79,12 +90,12 @@ export function AssigneePicker({ workspaceId, value, onChange, disabled }) {
         </button>
       </Popover.Trigger>
 
-      <Popover.Portal>
+      <Popover.Portal container={portalContainer}>
         <Popover.Content
           side="bottom"
           align="start"
           sideOffset={4}
-          className="z-50 w-[260px] bg-paper-100 border border-paper-300 rounded-md shadow-md p-1 animate-slide-up"
+          className="z-[60] w-[260px] bg-paper-100 border border-paper-300 rounded-md shadow-md p-1 animate-slide-up"
         >
           <div className="p-1.5 border-b border-paper-200">
             <input

@@ -11,6 +11,7 @@ import {
 import { ChevronLeft, Folder } from 'lucide-react';
 import { useProject, useBoard } from './hooks';
 import { useCreateTask, useReorderTask } from '../tasks/mutations';
+import { useWorkspace } from '../../hooks/useWorkspace';
 import { KanbanColumn } from '../../components/tasks/KanbanColumn';
 import { TaskCard } from '../../components/tasks/TaskCard';
 import { TaskCreateModal } from '../../components/tasks/TaskCreateModal';
@@ -24,6 +25,7 @@ import { TASK_STATUSES } from '../../lib/constants';
 export default function ProjectDetailPage() {
   const { id } = useParams();
   const toast = useToast();
+  const { current: currentWorkspace } = useWorkspace();
 
   const { data: project, isLoading: loadingProject, error: projectError, refetch: refetchProject } = useProject(id);
   const { data: board, isLoading: loadingBoard, error: boardError, refetch: refetchBoard } = useBoard(id);
@@ -62,6 +64,9 @@ export default function ProjectDetailPage() {
       </div>
     );
   }
+
+  /* Robust workspace ID — always falls back to current workspace */
+  const workspaceId = project.workspace || currentWorkspace?.id;
 
   function handleDragStart(event) {
     const flat = Object.values(board).flat();
@@ -162,7 +167,7 @@ export default function ProjectDetailPage() {
         open={createModal.open}
         onOpenChange={(open) => setCreateModal({ ...createModal, open })}
         status={createModal.status}
-        workspaceId={project.workspace}
+        workspaceId={workspaceId}
         onSubmit={handleCreateTask}
         isSubmitting={createMutation.isPending}
       />

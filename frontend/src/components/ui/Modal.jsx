@@ -13,6 +13,7 @@ export function Modal({ open, onOpenChange, title, description, children, size =
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/40 z-40 animate-fade-in" />
         <Dialog.Content
+          id="taskora-dialog-content"
           className={cn(
             'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50',
             'bg-paper-100 rounded-lg shadow-lg border border-paper-300',
