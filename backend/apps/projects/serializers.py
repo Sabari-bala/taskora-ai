@@ -28,7 +28,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
     lead = UserSerializer(read_only=True)
     task_count = serializers.IntegerField(read_only=True, default=0)
     completed_task_count = serializers.IntegerField(read_only=True, default=0)
-    workspace = serializers.UUIDField(read_only=True)
+    workspace = serializers.UUIDField(source='workspace_id', read_only=True)
 
     class Meta:
         model = Project
