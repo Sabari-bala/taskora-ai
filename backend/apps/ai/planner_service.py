@@ -1,4 +1,4 @@
-﻿from django.db import transaction
+from django.db import transaction
 
 from apps.projects.models import Label, Milestone
 from apps.projects.services import create_project
@@ -8,6 +8,86 @@ from .models import AIInteraction
 from .prompts import planner as planner_prompt
 from .schemas import PROJECT_PLAN_SCHEMA
 from .services import call_ai
+
+
+def _normalize_plan(data: dict) -> dict:
+    """
+    Normalize common LLM aliases into our canonical field names.
+
+    Groq's gpt-oss-120b sometimes uses `name` instead of `title`, and
+    `estimate_hours` instead of `estimated_hours`. Rather than fail the
+    request, we map them here. This runs BEFORE schema validation.
+    """
+    if not isinstance(data, dict):
+        return data
+
+    milestones = []
+    for m in data.get("milestones") or []:
+        if isinstance(m, str):
+            milestones.append({"title": m})
+            continue
+        if not isinstance(m, dict):
+            continue
+        milestones.append({
+            "title": m.get("title") or m.get("name") or "",
+            "description": m.get("description") or "",
+            "suggested_week": m.get("suggested_week"),
+        })
+    # strip None values so schema defaults / optional checks work
+    for m in milestones:
+        if m.get("suggested_week") is None:
+            m.pop("suggested_week", None)
+        if not m.get("description"):
+            m.pop("description", None)
+
+    epics = []
+    for e in data.get("epics") or []:
+        if isinstance(e, str):
+            epics.append({"name": e})
+            continue
+        if not isinstance(e, dict):
+            continue
+        epics.append({
+            "name": e.get("name") or e.get("title") or "",
+            "description": e.get("description") or "",
+        })
+    for e in epics:
+        if not e.get("description"):
+            e.pop("description", None)
+
+    tasks = []
+    for t in data.get("tasks") or []:
+        if not isinstance(t, dict):
+            continue
+        hours = t.get("estimated_hours")
+        if hours is None:
+            hours = t.get("estimate_hours")
+        if hours is None:
+            hours = t.get("estimate")
+        priority = (t.get("priority") or "medium").lower()
+        if priority not in ("low", "medium", "high", "urgent"):
+            priority = "medium"
+
+        task = {
+            "title": t.get("title") or t.get("name") or "",
+            "priority": priority,
+        }
+        if t.get("description"):
+            task["description"] = t["description"]
+        if t.get("epic"):
+            task["epic"] = t["epic"]
+        if hours is not None:
+            task["estimated_hours"] = hours
+        if t.get("milestone_title"):
+            task["milestone_title"] = t["milestone_title"]
+        tasks.append(task)
+
+    return {
+        "overview": data.get("overview") or "No overview provided.",
+        "milestones": milestones,
+        "epics": epics,
+        "tasks": tasks,
+    }
 
 
 def generate_plan(*, user, workspace, idea, team_size, timeline, detail_level):
@@ -28,6 +108,7 @@ def generate_plan(*, user, workspace, idea, team_size, timeline, detail_level):
         schema=PROJECT_PLAN_SCHEMA,
         user=user,
         workspace=workspace,
+        normalizer=_normalize_plan,
     )
 
 
@@ -57,7 +138,6 @@ def commit_plan(
         lead=user,
     )
 
-    # Map milestone titles to objects so tasks can attach to them
     milestone_by_title = {}
     for m in milestones:
         obj = Milestone.objects.create(
@@ -68,7 +148,6 @@ def commit_plan(
         )
         milestone_by_title[m["title"]] = obj
 
-    # Epics become workspace labels (reused across projects in this workspace)
     label_by_name = {}
     for t in tasks:
         epic = (t.get("epic") or "").strip()

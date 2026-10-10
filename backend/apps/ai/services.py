@@ -5,18 +5,21 @@ Every AI feature flows through `call_ai()`. That function:
   1. Enforces per-user hourly quota (backed by AIInteraction rows)
   2. Calls the provider with a timeout
   3. Retries ONCE on timeout / 5xx
-  4. Parses and validates the JSON against a schema
-  5. Logs an AIInteraction row with tokens, latency, status
-  6. Returns the validated dict to the caller
+  4. Optionally normalizes the raw dict (field aliases, missing defaults)
+  5. Validates against the JSON schema
+  6. Logs an AIInteraction row with tokens, latency, status
+  7. Returns the validated dict to the caller
 
 The caller NEVER sees raw text. It receives either a dict that matches
 the schema, or a raised AIError subclass.
 """
+import json
 import time
 from datetime import timedelta
 
 from django.conf import settings
 from django.utils import timezone
+from jsonschema import Draft7Validator
 
 from .exceptions import (
     AIError,
@@ -28,7 +31,7 @@ from .exceptions import (
 )
 from .models import AIInteraction
 from .providers import get_provider
-from .validation import parse_and_validate
+from .validation import _try_extract_json
 
 
 DEFAULT_TIMEOUT = 20
@@ -79,9 +82,14 @@ def call_ai(
     workspace=None,
     timeout: int = DEFAULT_TIMEOUT,
     provider=None,
+    normalizer=None,
 ) -> dict:
     """
     The one gateway. Returns a schema-validated dict, or raises AIError.
+
+    `normalizer` is an optional callable that receives the raw parsed dict
+    and returns a normalized dict. It runs BEFORE schema validation, so it
+    can map alias field names (e.g. `name` -> `title`) and fill defaults.
     """
     _check_quota(user)
 
@@ -112,7 +120,7 @@ def call_ai(
         except AITimeoutError as exc:
             last_exc = exc
             if attempt == 1:
-                continue  # retry once
+                continue
             latency_ms = int((time.monotonic() - started) * 1000)
             _log(user=user, workspace=workspace, feature=feature,
                  status=AIInteraction.Status.TIMEOUT,
@@ -129,7 +137,7 @@ def call_ai(
         except AIProviderError as exc:
             last_exc = exc
             if attempt == 1:
-                continue  # retry once
+                continue
             latency_ms = int((time.monotonic() - started) * 1000)
             _log(user=user, workspace=workspace, feature=feature,
                  status=AIInteraction.Status.FAILED,
@@ -139,26 +147,55 @@ def call_ai(
 
         latency_ms = int((time.monotonic() - started) * 1000)
 
-        # ── Validate ─────────────────────────────
+        # ── Parse JSON ──────────────────────────────
         try:
-            validated = parse_and_validate(result["text"], schema)
-        except AIValidationError as exc:
+            cleaned = _try_extract_json(result["text"])
+            data = json.loads(cleaned)
+        except (json.JSONDecodeError, TypeError) as exc:
+            msg = str(exc)[:200] if str(exc) else "AI did not return valid JSON"
             _log(user=user, workspace=workspace, feature=feature,
                  status=AIInteraction.Status.VALIDATION_ERROR,
                  provider_name=provider_name, model=result.get("model", model),
                  prompt_tokens=result.get("prompt_tokens", 0),
                  completion_tokens=result.get("completion_tokens", 0),
-                 latency_ms=latency_ms, error=str(exc))
-            raise
+                 latency_ms=latency_ms, error=msg)
+            raise AIValidationError(f"AI did not return valid JSON: {msg}") from exc
 
-        # ── Success ──────────────────────────────
+        # ── Normalize (optional) ────────────────────
+        if normalizer:
+            try:
+                data = normalizer(data)
+            except Exception as exc:
+                _log(user=user, workspace=workspace, feature=feature,
+                     status=AIInteraction.Status.VALIDATION_ERROR,
+                     provider_name=provider_name, model=result.get("model", model),
+                     prompt_tokens=result.get("prompt_tokens", 0),
+                     completion_tokens=result.get("completion_tokens", 0),
+                     latency_ms=latency_ms, error=f"normalizer: {exc}")
+                raise AIValidationError(f"AI output normalization failed: {exc}") from exc
+
+        # ── Validate against schema ─────────────────
+        validator = Draft7Validator(schema)
+        errors = sorted(validator.iter_errors(data), key=lambda e: e.path)
+        if errors:
+            first = errors[0]
+            path = ".".join(str(p) for p in first.path) or "<root>"
+            msg = f"schema mismatch at {path}: {first.message}"
+            _log(user=user, workspace=workspace, feature=feature,
+                 status=AIInteraction.Status.VALIDATION_ERROR,
+                 provider_name=provider_name, model=result.get("model", model),
+                 prompt_tokens=result.get("prompt_tokens", 0),
+                 completion_tokens=result.get("completion_tokens", 0),
+                 latency_ms=latency_ms, error=msg)
+            raise AIValidationError(msg)
+
+        # ── Success ─────────────────────────────────
         _log(user=user, workspace=workspace, feature=feature,
              status=AIInteraction.Status.SUCCESS,
              provider_name=provider_name, model=result.get("model", model),
              prompt_tokens=result.get("prompt_tokens", 0),
              completion_tokens=result.get("completion_tokens", 0),
              latency_ms=latency_ms)
-        return validated
+        return data
 
-    # Should be unreachable, but keeps mypy happy
     raise AIProviderError(str(last_exc) if last_exc else "Unknown AI failure")
