@@ -1,0 +1,130 @@
+import { useState } from 'react';
+import { Sparkles, Loader2, RefreshCw, ChevronDown, ChevronRight } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
+import { useProjectInsights } from './hooks';
+import { cn } from '../../lib/utils';
+
+export function InsightsCard({ projectId }) {
+  const insights = useProjectInsights();
+  const [result, setResult] = useState(null);
+  const [collapsed, setCollapsed] = useState(false);
+
+  async function generate() {
+    try {
+      const res = await insights.mutateAsync(projectId);
+      setResult(res.insights);
+      setCollapsed(false);
+    } catch {
+      // handled by toast
+    }
+  }
+
+  if (!result && !insights.isPending) {
+    return (
+      <div className="mx-6 lg:mx-8 mt-6 rounded-lg border border-ember-100 bg-ember-50 p-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Sparkles size={14} className="text-ember-500" />
+          <p className="text-body-sm text-ink-700">
+            Get an AI read on this project's progress, risks, and priorities.
+          </p>
+        </div>
+        <Button variant="ai" size="sm" leadingIcon={Sparkles} onClick={generate}>
+          Generate insights
+        </Button>
+      </div>
+    );
+  }
+
+  if (insights.isPending) {
+    return (
+      <div className="mx-6 lg:mx-8 mt-6 rounded-lg border border-ember-100 bg-ember-50 p-4 flex items-center gap-3">
+        <Loader2 size={16} className="text-ember-500 animate-spin" />
+        <p className="text-body-sm text-ink-700">
+          Reading the project data and drafting insights…
+        </p>
+      </div>
+    );
+  }
+
+  if (!result) return null;
+
+  return (
+    <div
+      className="mx-6 lg:mx-8 mt-6 rounded-lg border border-ember-100"
+      style={{ backgroundColor: 'var(--ember-50)' }}
+    >
+      <div className="flex items-start justify-between gap-3 p-4 border-b border-ember-100">
+        <div className="flex items-start gap-2 min-w-0">
+          <Sparkles size={14} className="text-ember-500 mt-0.5 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-overline text-ember-600 mb-1">AI PROJECT INSIGHTS</p>
+            <p className="text-body text-ink-900 font-medium leading-snug">
+              {result.headline}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={generate}
+            className="p-1 rounded text-ink-500 hover:text-ink-800 hover:bg-paper-100 transition-colors"
+            aria-label="Regenerate"
+          >
+            <RefreshCw size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            className="p-1 rounded text-ink-500 hover:text-ink-800 hover:bg-paper-100 transition-colors"
+            aria-label={collapsed ? 'Expand' : 'Collapse'}
+          >
+            {collapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+          </button>
+        </div>
+      </div>
+
+      {!collapsed && (
+        <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <InsightsSection title="Observations" items={result.observations} />
+          <InsightsSection title="Risks" items={result.risks} tone="warning" />
+          <InsightsSection
+            title="Recommendations"
+            items={result.recommendations}
+            tone="signal"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InsightsSection({ title, items = [], tone = 'neutral' }) {
+  if (!items || items.length === 0) {
+    return (
+      <div>
+        <p className="text-overline text-ink-500 mb-1.5">{title.toUpperCase()}</p>
+        <p className="text-body-sm text-ink-500 italic">None noted.</p>
+      </div>
+    );
+  }
+  const colors = {
+    neutral: 'text-ink-700',
+    warning: 'text-[var(--warning-text)]',
+    signal: 'text-signal-700',
+  };
+  return (
+    <div>
+      <p className={cn('text-overline mb-1.5', colors[tone])}>
+        {title.toUpperCase()}
+      </p>
+      <ul className="space-y-1">
+        {items.map((item, i) => (
+          <li key={i} className="flex gap-2 text-body-sm text-ink-800">
+            <span className="mt-1.5 w-1 h-1 rounded-full bg-ink-500 shrink-0" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

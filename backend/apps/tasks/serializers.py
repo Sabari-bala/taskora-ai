@@ -17,12 +17,13 @@ class TaskListSerializer(serializers.ModelSerializer):
     assignee = UserSerializer(read_only=True)
     labels = LabelMiniSerializer(many=True, read_only=True)
     is_overdue = serializers.BooleanField(read_only=True)
+    project = serializers.UUIDField(source='project_id', read_only=True)
 
     class Meta:
         model = Task
         fields = [
             'id', 'title', 'status', 'priority', 'position',
-            'assignee', 'labels', 'due_date', 'estimate_hours',
+            'project', 'assignee', 'labels', 'due_date', 'estimate_hours',
             'is_overdue', 'created_at', 'updated_at',
         ]
 
@@ -34,7 +35,7 @@ class TaskDetailSerializer(TaskListSerializer):
 
     class Meta(TaskListSerializer.Meta):
         fields = TaskListSerializer.Meta.fields + [
-            'description', 'project', 'workspace', 'created_by',
+            'description', 'workspace', 'created_by',
             'milestone', 'parent_task', 'completed_at', 'subtask_count',
         ]
 

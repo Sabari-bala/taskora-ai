@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { aiApi } from './api';
 
 export function usePlanProject() {
@@ -18,15 +18,6 @@ export function useCommitPlan() {
   });
 }
 
-export function useProjectInsights(projectId) {
-  return useQuery({
-    queryKey: ['ai-insights', projectId],
-    queryFn: () => aiApi.projectInsights(projectId),
-    enabled: false,
-    staleTime: 60_000,
-  });
-}
-
 export function useBreakdownTask() {
   return useMutation({
     mutationFn: (taskId) => aiApi.breakdownTask(taskId),
@@ -36,5 +27,11 @@ export function useBreakdownTask() {
 export function useSummarizeTask() {
   return useMutation({
     mutationFn: (taskId) => aiApi.summarizeTask(taskId),
+  });
+}
+
+export function useProjectInsights() {
+  return useMutation({
+    mutationFn: (projectId) => aiApi.projectInsights(projectId),
   });
 }

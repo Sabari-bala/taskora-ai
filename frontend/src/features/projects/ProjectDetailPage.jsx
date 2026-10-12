@@ -16,6 +16,7 @@ import { KanbanColumn } from '../../components/tasks/KanbanColumn';
 import { TaskCard } from '../../components/tasks/TaskCard';
 import { TaskCreateModal } from '../../components/tasks/TaskCreateModal';
 import { TaskDetailDrawer } from '../../components/tasks/TaskDetailDrawer';
+import { InsightsCard } from '../ai/InsightsCard';
 import { Card } from '../../components/ui/Card';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
@@ -65,7 +66,6 @@ export default function ProjectDetailPage() {
     );
   }
 
-  /* Robust workspace ID — always falls back to current workspace */
   const workspaceId = project.workspace || currentWorkspace?.id;
 
   function handleDragStart(event) {
@@ -132,36 +132,40 @@ export default function ProjectDetailPage() {
         </div>
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="flex-1 min-h-0 overflow-x-auto">
-          <div className="flex gap-3 p-6 lg:p-8 h-full min-h-0">
-            {TASK_STATUSES.map((s) => (
-              <KanbanColumn
-                key={s.value}
-                status={s.value}
-                label={s.label}
-                projectKey={project.key}
-                tasks={board?.[s.value] || []}
-                onTaskClick={(task) => setDetailTaskId(task.id)}
-                onAddClick={() => setCreateModal({ open: true, status: s.value })}
-              />
-            ))}
-          </div>
-        </div>
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <InsightsCard projectId={id} />
 
-        <DragOverlay dropAnimation={null}>
-          {activeTask ? (
-            <div className="w-[300px]">
-              <TaskCard task={activeTask} projectKey={project.key} overlay />
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="overflow-x-auto">
+            <div className="flex gap-3 p-6 lg:p-8 min-h-[500px]">
+              {TASK_STATUSES.map((s) => (
+                <KanbanColumn
+                  key={s.value}
+                  status={s.value}
+                  label={s.label}
+                  projectKey={project.key}
+                  tasks={board?.[s.value] || []}
+                  onTaskClick={(task) => setDetailTaskId(task.id)}
+                  onAddClick={() => setCreateModal({ open: true, status: s.value })}
+                />
+              ))}
             </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+          </div>
+
+          <DragOverlay dropAnimation={null}>
+            {activeTask ? (
+              <div className="w-[300px]">
+                <TaskCard task={activeTask} projectKey={project.key} overlay />
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      </div>
 
       <TaskCreateModal
         open={createModal.open}
