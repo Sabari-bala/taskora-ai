@@ -21,11 +21,9 @@ export function UserMenu() {
   }
 
   async function handleLogout(e) {
-    e.preventDefault();          // keep the dropdown from auto-closing mid-await
+    e.preventDefault();
     setOpen(false);
     await logout();
-    // Explicitly land on the public landing page.
-    // ProtectedRoute would otherwise bounce us to /login.
     navigate('/', { replace: true });
   }
 
@@ -68,7 +66,7 @@ export function UserMenu() {
             className="flex items-center gap-2 px-3 py-2 rounded text-body-sm text-ink-600 hover:bg-paper-150 outline-none cursor-pointer"
           >
             <Settings size={14} />
-            Account settings
+            Settings
           </DropdownMenu.Item>
           <DropdownMenu.Item
             onSelect={(e) => {

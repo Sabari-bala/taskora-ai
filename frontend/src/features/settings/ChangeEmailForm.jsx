@@ -5,16 +5,34 @@ import { Button } from '../../components/ui/Button';
 import { authApi } from '../auth/api';
 import { useToast } from '../../components/ui/Toast';
 
+/* Client-side email format validation.
+ * Catches the obvious mistakes (missing @, missing domain, spaces).
+ * The backend still validates authoritatively — this is just UX. */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+function validateEmail(value) {
+  if (!value || !value.trim()) return 'Email is required.';
+  if (!EMAIL_RE.test(value.trim())) return 'Please enter a valid email address.';
+  return '';
+}
+
 export function ChangeEmailForm({ currentEmail }) {
   const toast = useToast();
   const [newEmail, setNewEmail] = useState('');
+  const [touched, setTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
-  const [error, setError] = useState('');
+  const [serverError, setServerError] = useState('');
+
+  const clientError = touched ? validateEmail(newEmail) : '';
+  const showError = clientError || serverError;
+  const isValid = !validateEmail(newEmail);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError('');
+    setServerError('');
+    setTouched(true);
+    if (validateEmail(newEmail)) return;
     if (!newEmail.trim()) return;
 
     setSubmitting(true);
@@ -28,7 +46,7 @@ export function ChangeEmailForm({ currentEmail }) {
         data?.errors?.new_email?.[0] ||
         data?.detail ||
         'Could not request email change.';
-      setError(detail);
+      setServerError(detail);
     } finally {
       setSubmitting(false);
     }
@@ -72,7 +90,7 @@ export function ChangeEmailForm({ currentEmail }) {
             </div>
             <button
               type="button"
-              onClick={() => { setSent(false); setNewEmail(''); }}
+              onClick={() => { setSent(false); setNewEmail(''); setTouched(false); }}
               className="mt-3 text-signal-500 hover:text-signal-600 font-medium text-body-sm"
             >
               Send to a different address
@@ -80,32 +98,29 @@ export function ChangeEmailForm({ currentEmail }) {
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2" noValidate>
           <Input
             type="email"
             label="New email address"
             placeholder="newemail@example.com"
             value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            helper="We will send a verification link to this address."
+            onChange={(e) => { setNewEmail(e.target.value); setServerError(''); }}
+            onBlur={() => setTouched(true)}
+            error={showError}
+            helper={
+              !showError
+                ? 'We will send a verification link to this address.'
+                : undefined
+            }
             required
           />
-
-          {error && (
-            <div
-              role="alert"
-              className="rounded-md border border-[var(--danger)] bg-[var(--danger-bg)] px-3 py-2 text-body-sm text-[var(--danger-text)]"
-            >
-              {error}
-            </div>
-          )}
 
           <div className="flex justify-end pt-2">
             <Button
               type="submit"
               isLoading={submitting}
               leadingIcon={Check}
-              disabled={!newEmail.trim()}
+              disabled={!isValid}
             >
               Send verification link
             </Button>

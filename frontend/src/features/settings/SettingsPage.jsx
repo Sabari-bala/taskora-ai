@@ -18,8 +18,6 @@ export default function SettingsPage() {
   const { refreshUser } = useAuth();
   const [tab, setTab] = useState('profile');
 
-  /* Always pull fresh user data when Settings mounts.
-   * The email may have changed in another tab (verification link). */
   useEffect(() => {
     refreshUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,24 +145,6 @@ function SecurityTab() {
     <div className="space-y-6">
       <Card className="p-6">
         <ChangePasswordForm />
-      </Card>
-
-      <Card className="p-6">
-        <h3 className="text-h4 font-semibold text-ink-900 mb-2">Session security</h3>
-        <div className="space-y-3 text-body-sm text-ink-600">
-          <p>
-            <strong className="text-ink-800">Access tokens</strong> expire in 15 minutes
-            and are stored in memory only — never in localStorage.
-          </p>
-          <p>
-            <strong className="text-ink-800">Refresh tokens</strong> are stored in an
-            HttpOnly, SameSite cookie and cannot be read by JavaScript.
-          </p>
-          <p>
-            <strong className="text-ink-800">Signing out</strong> blacklists your
-            refresh token server-side.
-          </p>
-        </div>
       </Card>
     </div>
   );

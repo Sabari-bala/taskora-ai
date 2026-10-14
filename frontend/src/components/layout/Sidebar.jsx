@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, CheckSquare, Folder, Settings, Plus, Users } from 'lucide-react';
+import { Home, CheckSquare, Folder, Plus, Users } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
 import { UserMenu } from './UserMenu';
@@ -68,10 +68,7 @@ export function Sidebar({ className }) {
       </nav>
 
       <div className="border-t border-paper-300 p-3 shrink-0">
-        <SidebarLink to="/settings" label="Settings" icon={Settings} />
-        <div className="mt-2">
-          <UserMenu />
-        </div>
+        <UserMenu />
       </div>
     </aside>
   );
