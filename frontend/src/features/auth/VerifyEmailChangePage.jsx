@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { authApi } from './api';
@@ -14,7 +14,14 @@ export function VerifyEmailChangePage() {
   const [state, setState] = useState('loading');
   const [message, setMessage] = useState('');
 
+  /* StrictMode runs effects twice in dev. Without this guard, the second
+   * call hits an "already used" response and shows a false error. */
+  const fired = useRef(false);
+
   useEffect(() => {
+    if (fired.current) return;
+    fired.current = true;
+
     if (!code) {
       setState('error');
       setMessage('Missing verification code.');
@@ -26,8 +33,8 @@ export function VerifyEmailChangePage() {
       .verifyEmailChange(code)
       .then(async (data) => {
         if (cancelled) return;
-        // The DB now has the new email — but our in-memory user is stale.
-        // Pull fresh user data so Settings and the sidebar show the change.
+        // The DB now has the new email — refresh the in-memory user so
+        // Settings and the sidebar show the change immediately.
         if (isAuthenticated) {
           try { await refreshUser(); } catch { /* non-fatal */ }
         }
