@@ -17,6 +17,7 @@ import { TaskCard } from '../../components/tasks/TaskCard';
 import { TaskCreateModal } from '../../components/tasks/TaskCreateModal';
 import { TaskDetailDrawer } from '../../components/tasks/TaskDetailDrawer';
 import { InsightsCard } from '../ai/InsightsCard';
+import { MilestonePanel } from '../../components/projects/MilestonePanel';
 import { Card } from '../../components/ui/Card';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
@@ -134,6 +135,10 @@ export default function ProjectDetailPage() {
 
       <div className="flex-1 min-h-0 overflow-y-auto">
         <InsightsCard projectId={id} />
+
+        <div className="mx-6 lg:mx-8 mt-6">
+          <MilestonePanel projectId={id} />
+        </div>
 
         <DndContext
           sensors={sensors}

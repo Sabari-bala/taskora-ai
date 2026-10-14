@@ -25,6 +25,8 @@ import { useWorkspace } from '../../hooks/useWorkspace';
 import { useToast } from '../ui/Toast';
 import { BreakdownModal } from '../../features/ai/BreakdownModal';
 import { SummarizePanel } from '../../features/ai/SummarizePanel';
+import { SubtaskList } from './SubtaskList';
+import { useSubtasks } from '../../features/tasks/hooks';
 import {
   TASK_STATUSES,
   TASK_PRIORITIES,

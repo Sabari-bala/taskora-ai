@@ -17,4 +17,6 @@ export const tasksApi = {
     api.post(`/tasks/${id}/comments/`, { body }).then((r) => r.data),
   deleteComment: (taskId, commentId) =>
     api.delete(`/tasks/${taskId}/comments/${commentId}/`).then((r) => r.data),
+  subtasks: (parentId) =>
+    api.get('/tasks/', { params: { parent_task: parentId } }).then((r) => r.data),
 };

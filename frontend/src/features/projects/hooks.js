@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { projectsApi } from './api';
 
 export function useProjects(params = {}) {
@@ -21,5 +21,45 @@ export function useBoard(id) {
     queryKey: ['board', id],
     queryFn: () => projectsApi.board(id),
     enabled: !!id,
+  });
+}
+
+export function useMilestones(projectId) {
+  return useQuery({
+    queryKey: ['milestones', projectId],
+    queryFn: () => projectsApi.milestones(projectId),
+    enabled: !!projectId,
+    staleTime: 30_000,
+  });
+}
+
+export function useCreateMilestone(projectId) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => projectsApi.createMilestone(projectId, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['milestones', projectId] });
+    },
+  });
+}
+
+export function useUpdateMilestone(projectId) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ...data }) =>
+      projectsApi.updateMilestone(projectId, id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['milestones', projectId] });
+    },
+  });
+}
+
+export function useDeleteMilestone(projectId) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => projectsApi.deleteMilestone(projectId, id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['milestones', projectId] });
+    },
   });
 }

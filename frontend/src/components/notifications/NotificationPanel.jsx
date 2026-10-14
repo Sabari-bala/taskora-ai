@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Bell, CheckCheck } from 'lucide-react';
 import * as Popover from '@radix-ui/react-popover';
 import { Spinner } from '../ui/Spinner';
@@ -70,7 +71,7 @@ export function NotificationPanel() {
               />
             ) : (
               <ul className="divide-y divide-paper-200">
-                {notifications.map((n) => (
+                {notifications.slice(0, 5).map((n) => (
                   <li key={n.id}>
                     <button
                       type="button"
@@ -99,6 +100,17 @@ export function NotificationPanel() {
               </ul>
             )}
           </div>
+
+          {notifications.length > 0 && (
+            <div className="border-t border-paper-200">
+              <Link
+                to="/notifications"
+                className="block text-center py-2.5 text-body-sm text-signal-500 hover:text-signal-600 font-medium hover:bg-paper-50 transition-colors"
+              >
+                View all notifications
+              </Link>
+            </div>
+          )}
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

@@ -1,13 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { tasksApi } from './api';
 
-/**
- * Task detail query.
- * `refetchOnMount: 'always'` guarantees that opening a drawer fetches the
- * latest server shape, even if the response gained new fields since the
- * last cache write. Without it, a schema change would silently serve
- * stale objects — which is exactly what bit the assignee picker.
- */
 export function useTask(id) {
   return useQuery({
     queryKey: ['task', id],
@@ -42,5 +35,14 @@ export function useTaskComments(id) {
     enabled: !!id,
     staleTime: 0,
     refetchOnMount: 'always',
+  });
+}
+
+export function useSubtasks(parentTaskId) {
+  return useQuery({
+    queryKey: ['subtasks', parentTaskId],
+    queryFn: () => tasksApi.subtasks(parentTaskId),
+    enabled: !!parentTaskId,
+    staleTime: 10_000,
   });
 }

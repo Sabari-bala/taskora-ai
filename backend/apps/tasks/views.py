@@ -56,6 +56,10 @@ class TaskViewSet(viewsets.ModelViewSet):
             )
         if params.get('mine') == 'true':
             qs = qs.filter(assignee=self.request.user)
+        if v := params.get('parent_task'):
+            qs = qs.filter(parent_task_id=v)
+        if params.get('top_level') == 'true':
+            qs = qs.filter(parent_task__isnull=True)
         return qs
 
     def get_serializer_class(self):

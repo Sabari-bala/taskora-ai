@@ -9,6 +9,18 @@ export const projectsApi = {
   board: (id) => api.get(`/projects/${id}/board/`).then((r) => r.data),
   analytics: (id) =>
     api.get(`/projects/${id}/analytics/`).then((r) => r.data),
+
+  // Milestones
   milestones: (id) =>
     api.get(`/projects/${id}/milestones/`).then((r) => r.data),
+  createMilestone: (id, data) =>
+    api.post(`/projects/${id}/milestones/`, data).then((r) => r.data),
+  updateMilestone: (projectId, milestoneId, data) =>
+    api
+      .patch(`/projects/${projectId}/milestones/${milestoneId}/`, data)
+      .then((r) => r.data),
+  deleteMilestone: (projectId, milestoneId) =>
+    api
+      .delete(`/projects/${projectId}/milestones/${milestoneId}/`)
+      .then((r) => r.data),
 };
