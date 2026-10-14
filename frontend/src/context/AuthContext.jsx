@@ -14,8 +14,6 @@ export function AuthProvider({ children }) {
 
     async function bootstrap() {
       try {
-        // Shared singleton: StrictMode's second invoke reuses the
-        // first call's in-flight promise instead of racing it.
         const { data } = await refreshTokens();
         if (cancelled) return;
         setAccessToken(data.access);
@@ -58,9 +56,29 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  /* Re-fetch the current user from the server and refresh state.
+   * Used after email change, profile update, or when Settings mounts. */
+  const refreshUser = useCallback(async () => {
+    try {
+      const fresh = await authApi.me();
+      setUser(fresh);
+      return fresh;
+    } catch {
+      return null;
+    }
+  }, []);
+
   const value = useMemo(
-    () => ({ user, isAuthenticated: !!user, isBootstrapping, login, register, logout }),
-    [user, isBootstrapping, login, register, logout]
+    () => ({
+      user,
+      isAuthenticated: !!user,
+      isBootstrapping,
+      login,
+      register,
+      logout,
+      refreshUser,
+    }),
+    [user, isBootstrapping, login, register, logout, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
