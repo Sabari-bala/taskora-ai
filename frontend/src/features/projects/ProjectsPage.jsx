@@ -9,19 +9,23 @@ import { Button } from '../../components/ui/Button';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
+import { Pagination } from '../../components/ui/Pagination';
 import { PlannerModal } from '../ai/PlannerModal';
 import { NewProjectModal } from './NewProjectModal';
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
   const { current } = useWorkspace();
+  const [page, setPage] = useState(1);
   const { data, isLoading, error, refetch } = useProjects(
-    current ? { workspace: current.id } : {}
+    current ? { workspace: current.id, page } : { page }
   );
   const [plannerOpen, setPlannerOpen] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
 
   const projects = data?.results || [];
+  const count = data?.count || 0;
+  const pageSize = 20;
 
   if (!current) {
     return (
@@ -95,11 +99,19 @@ export default function ProjectsPage() {
           />
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+          <Pagination
+            page={page}
+            pageSize={pageSize}
+            count={count}
+            onPageChange={setPage}
+          />
+        </>
       )}
 
       <PlannerModal

@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User as UserIcon, Settings } from 'lucide-react';
+import { LogOut, Settings, Sun, Moon } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Avatar } from '../ui/Avatar';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../context/ThemeContext';
 import { cn } from '../../lib/utils';
 
 export function UserMenu() {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -56,15 +58,18 @@ export function UserMenu() {
             onSelect={() => go('/settings')}
             className="flex items-center gap-2 px-3 py-2 rounded text-body-sm text-ink-600 hover:bg-paper-150 outline-none cursor-pointer"
           >
-            <UserIcon size={14} />
-            Profile
+            <Settings size={14} />
+            Account settings
           </DropdownMenu.Item>
           <DropdownMenu.Item
-            onSelect={() => go('/settings')}
+            onSelect={(e) => {
+              e.preventDefault();
+              toggleTheme();
+            }}
             className="flex items-center gap-2 px-3 py-2 rounded text-body-sm text-ink-600 hover:bg-paper-150 outline-none cursor-pointer"
           >
-            <Settings size={14} />
-            Settings
+            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
           </DropdownMenu.Item>
           <DropdownMenu.Separator className="h-px bg-paper-200 my-1" />
           <DropdownMenu.Item

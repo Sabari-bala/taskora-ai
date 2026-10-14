@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   /* ─── Paper & Ink ──────────────────────────── */
   --paper-50:  #FBFBF9;
   --paper-100: #FFFFFF;
@@ -45,4 +45,44 @@
   --priority-medium: var(--info);
   --priority-high:   var(--warning);
   --priority-urgent: var(--danger);
+}
+
+/* ═══════════════════════════════════════════════
+   DARK MODE
+   Toggled by adding .dark to <html>.
+   Every Tailwind utility that references these vars
+   flips automatically — no `dark:` variant needed.
+   ═══════════════════════════════════════════════ */
+.dark {
+  --paper-50:  #0E0E0D;
+  --paper-100: #1A1A18;
+  --paper-150: #232321;
+  --paper-200: #2A2A27;
+  --paper-300: #3A3A36;
+  --paper-400: #55554F;
+
+  --ink-500: #8A8A83;
+  --ink-600: #B0B0A8;
+  --ink-800: #E4E4DC;
+  --ink-900: #F5F5F0;
+
+  --signal-50:  #1A1D3D;
+  --signal-100: #232858;
+  --signal-300: #6B78FF;
+  --signal-500: #6B78FF;
+  --signal-600: #8590FF;
+  --signal-700: #A5ADFF;
+  --signal-900: #DDE3FF;
+
+  --ember-50:  #2E1B12;
+  --ember-100: #462618;
+  --ember-500: #FF8055;
+  --ember-600: #FFA07A;
+
+  --success: #2ECC71; --success-bg: #0D2E1A; --success-text: #7FE5A6;
+  --warning: #F5B93D; --warning-bg: #3A2C0A; --warning-text: #F5D57D;
+  --danger:  #FF6B6B; --danger-bg:  #3A1A1D; --danger-text:  #FFA5A8;
+  --info:    #4A9EFF; --info-bg:    #0F2338; --info-text:    #8EC5FF;
+
+  --status-review: #9A82FF;
 }

@@ -7,7 +7,7 @@ import { useWorkspace } from '../../hooks/useWorkspace';
 import { useProjects } from '../../features/projects/hooks';
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', icon: Home, end: true },
+  { to: '/dashboard', label: 'Dashboard', icon: Home },
   { to: '/tasks', label: 'My Tasks', icon: CheckSquare },
   { to: '/projects', label: 'All Projects', icon: Folder },
   { to: '/members', label: 'Members', icon: Users },
@@ -77,11 +77,10 @@ export function Sidebar({ className }) {
   );
 }
 
-function SidebarLink({ to, label, icon: Icon, end }) {
+function SidebarLink({ to, label, icon: Icon }) {
   return (
     <NavLink
       to={to}
-      end={end}
       className={({ isActive }) =>
         cn(
           'flex items-center gap-2.5 px-4 mx-2 h-9 rounded-md text-body-sm',
