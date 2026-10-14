@@ -9,11 +9,13 @@ import { CommentsList } from './CommentsList';
 import { CommentComposer } from './CommentComposer';
 import { ActivityTimeline } from './ActivityTimeline';
 import { AssigneePicker } from './AssigneePicker';
+import { SubtaskList } from './SubtaskList';
 import { StatusPill, PriorityPill } from '../../features/tasks/pills';
 import {
   useTask,
   useTaskActivity,
   useTaskComments,
+  useSubtasks,
 } from '../../features/tasks/hooks';
 import {
   useUpdateTask,
@@ -25,8 +27,6 @@ import { useWorkspace } from '../../hooks/useWorkspace';
 import { useToast } from '../ui/Toast';
 import { BreakdownModal } from '../../features/ai/BreakdownModal';
 import { SummarizePanel } from '../../features/ai/SummarizePanel';
-import { SubtaskList } from './SubtaskList';
-import { useSubtasks } from '../../features/tasks/hooks';
 import {
   TASK_STATUSES,
   TASK_PRIORITIES,
@@ -42,6 +42,9 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
   const { data: task, isLoading } = useTask(enabled ? taskId : null);
   const { data: activity } = useTaskActivity(enabled ? taskId : null);
   const { data: commentsPage } = useTaskComments(enabled ? taskId : null);
+  const { data: subtasksPage, isLoading: loadingSubtasks } = useSubtasks(
+    enabled ? taskId : null
+  );
   const updateMutation = useUpdateTask();
   const commentMutation = useAddComment(taskId);
   const deleteMutation = useDeleteTask(task?.project);
@@ -59,6 +62,7 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
   }, [task?.id]);
 
   const comments = commentsPage?.results || [];
+  const subtasks = subtasksPage?.results || [];
   const resolvedWorkspaceId = task?.workspace || currentWorkspace?.id;
 
   function updateField(field, value) {
@@ -213,6 +217,17 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                 <div>
                   <SummarizePanel taskId={taskId} />
                 </div>
+
+                {/* ─── Subtasks ─── */}
+                <SubtaskList
+                  subtasks={subtasks}
+                  isLoading={loadingSubtasks}
+                  onSubtaskClick={() => {
+                    /* TODO (Phase 24): open a nested drawer for the subtask.
+                     * For now, no-op — clicking a subtask is safe. */
+                  }}
+                  onAdd={() => setBreakdownOpen(true)}
+                />
 
                 <div>
                   <p className="text-overline text-ink-500 mb-2">DESCRIPTION</p>
