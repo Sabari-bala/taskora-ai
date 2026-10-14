@@ -1,17 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Search,
-  Folder,
-  ListTodo,
-  Home,
-  CheckSquare,
-  CornerDownLeft,
-} from 'lucide-react';
+import { Search, Folder, ListTodo, Home, CheckSquare } from 'lucide-react';
 import { useProjects } from '../../features/projects/hooks';
 import { useTasks } from '../../features/tasks/hooks';
 import { useWorkspace } from '../../hooks/useWorkspace';
-import { cn, formatRelative, shortTaskId } from '../../lib/utils';
+import { cn } from '../../lib/utils';
 
 /**
  * Chrome-style search input.
@@ -36,7 +29,6 @@ export function SearchBox() {
   const projects = projData?.results || [];
   const tasks = taskData?.results || [];
 
-  /* Filtering — case-insensitive, substring */
   const filteredTasks = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = q
@@ -68,7 +60,6 @@ export function SearchBox() {
     return all.filter((a) => a.label.toLowerCase().includes(q));
   }, [query]);
 
-  /* Flattened list for keyboard navigation */
   const flatItems = useMemo(() => {
     const items = [];
     filteredTasks.forEach((t) =>
@@ -83,12 +74,10 @@ export function SearchBox() {
     return items;
   }, [filteredTasks, filteredProjects, actions]);
 
-  /* Reset highlight when query changes */
   useEffect(() => {
     setHighlight(0);
   }, [query]);
 
-  /* Click outside closes */
   useEffect(() => {
     function handleMouseDown(e) {
       if (!containerRef.current?.contains(e.target)) {
@@ -99,7 +88,6 @@ export function SearchBox() {
     return () => document.removeEventListener('mousedown', handleMouseDown);
   }, []);
 
-  /* Global Ctrl+K focuses the box; Escape closes it */
   useEffect(() => {
     function onKey(e) {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -258,22 +246,6 @@ export function SearchBox() {
                 )}
               </>
             )}
-          </div>
-
-          {/* Footer hints */}
-          <div className="border-t border-paper-200 px-3 py-2 flex items-center gap-3 text-caption text-ink-500 bg-paper-50">
-            <span className="inline-flex items-center gap-1">
-              <kbd className="font-mono bg-paper-150 px-1 rounded border border-paper-300">↑↓</kbd>
-              navigate
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <CornerDownLeft size={11} />
-              open
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <kbd className="font-mono bg-paper-150 px-1 rounded border border-paper-300">Esc</kbd>
-              close
-            </span>
           </div>
         </div>
       )}

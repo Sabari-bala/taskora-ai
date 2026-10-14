@@ -1,13 +1,10 @@
 import { useState } from 'react';
-import { Mail, Check, Info } from 'lucide-react';
+import { Mail, Check } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { authApi } from '../auth/api';
 import { useToast } from '../../components/ui/Toast';
 
-/* Client-side email format validation.
- * Catches the obvious mistakes (missing @, missing domain, spaces).
- * The backend still validates authoritatively — this is just UX. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function validateEmail(value) {
@@ -39,13 +36,13 @@ export function ChangeEmailForm({ currentEmail }) {
     try {
       await authApi.requestEmailChange(newEmail.trim());
       setSent(true);
-      toast('Verification email sent', { variant: 'success' });
+      toast('Confirmation sent', { variant: 'success' });
     } catch (err) {
       const data = err?.response?.data;
       const detail =
         data?.errors?.new_email?.[0] ||
         data?.detail ||
-        'Could not request email change.';
+        'Could not update email. Try again in a moment.';
       setServerError(detail);
     } finally {
       setSubmitting(false);
@@ -71,29 +68,18 @@ export function ChangeEmailForm({ currentEmail }) {
           <Check size={16} className="text-[var(--success)] mt-0.5 shrink-0" />
           <div className="text-body-sm flex-1 min-w-0">
             <p className="font-medium text-[var(--success-text)]">
-              Verification email sent
+              Check your inbox
             </p>
             <p className="mt-1 text-[var(--success-text)]">
-              We sent a link to <strong>{newEmail}</strong>. Click it to confirm.
-              Expires in 24 hours.
+              We sent a confirmation link to <strong>{newEmail}</strong>.
+              Click the link to finish the change. It expires in 24 hours.
             </p>
-            <div className="mt-3 flex items-start gap-2 rounded border border-paper-300 bg-paper-100 px-3 py-2">
-              <Info size={13} className="text-ink-500 mt-0.5 shrink-0" />
-              <p className="text-caption text-ink-600">
-                Local development: the email is written to the Django server
-                terminal, not delivered. Look for the block{' '}
-                <code className="font-mono bg-paper-150 px-1 rounded">
-                  EMAIL VERIFICATION CODE
-                </code>
-                .
-              </p>
-            </div>
             <button
               type="button"
               onClick={() => { setSent(false); setNewEmail(''); setTouched(false); }}
               className="mt-3 text-signal-500 hover:text-signal-600 font-medium text-body-sm"
             >
-              Send to a different address
+              Use a different address
             </button>
           </div>
         </div>
@@ -101,15 +87,15 @@ export function ChangeEmailForm({ currentEmail }) {
         <form onSubmit={handleSubmit} className="space-y-4 pt-2" noValidate>
           <Input
             type="email"
-            label="New email address"
-            placeholder="newemail@example.com"
+            label="New email"
+            placeholder="you@company.com"
             value={newEmail}
             onChange={(e) => { setNewEmail(e.target.value); setServerError(''); }}
             onBlur={() => setTouched(true)}
             error={showError}
             helper={
               !showError
-                ? 'We will send a verification link to this address.'
+                ? "We'll send a link to confirm this address."
                 : undefined
             }
             required
@@ -122,7 +108,7 @@ export function ChangeEmailForm({ currentEmail }) {
               leadingIcon={Check}
               disabled={!isValid}
             >
-              Send verification link
+              Send confirmation link
             </Button>
           </div>
         </form>
