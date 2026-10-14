@@ -7,4 +7,10 @@ export const authApi = {
   refresh:  () => api.post('/auth/refresh/').then((r) => r.data),
   me:       () => api.get('/auth/me/').then((r) => r.data),
   updateMe: (data) => api.patch('/auth/me/', data).then((r) => r.data),
+  changePassword: (data) =>
+    api.post('/auth/change-password/', data).then((r) => r.data),
+  requestEmailChange: (newEmail) =>
+    api.post('/auth/change-email/', { new_email: newEmail }).then((r) => r.data),
+  verifyEmailChange: (token) =>
+    api.post('/auth/verify-email-change/', { token }).then((r) => r.data),
 };

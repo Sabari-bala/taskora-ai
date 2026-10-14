@@ -1,4 +1,4 @@
-﻿from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
@@ -58,3 +58,50 @@ class LoginSerializer(serializers.Serializer):
         write_only=True,
         style={"input_type": "password"},
     )
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    """Change password. Requires the current password as proof."""
+
+    old_password = serializers.CharField(
+        write_only=True,
+        style={"input_type": "password"},
+    )
+    new_password = serializers.CharField(
+        write_only=True,
+        min_length=8,
+        style={"input_type": "password"},
+    )
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
+    def validate(self, attrs):
+        if attrs["old_password"] == attrs["new_password"]:
+            raise serializers.ValidationError(
+                {"new_password": "New password must be different."}
+            )
+        return attrs
+
+
+class EmailChangeRequestSerializer(serializers.Serializer):
+    """Request an email change. Sends a verification link to the new address."""
+
+    new_email = serializers.EmailField()
+
+    def validate_new_email(self, value):
+        value = value.lower().strip()
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            if request.user.email.lower() == value:
+                raise serializers.ValidationError("That is already your email.")
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError(
+                "This email is already used by another account."
+            )
+        return value
+
+
+class EmailChangeVerifySerializer(serializers.Serializer):
+    token = serializers.CharField()

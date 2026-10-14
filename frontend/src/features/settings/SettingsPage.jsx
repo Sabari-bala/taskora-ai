@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { User as UserIcon, Building2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { User as UserIcon, Lock, Building2, Check, X } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { authApi } from '../auth/api';
@@ -8,30 +9,48 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Avatar } from '../../components/ui/Avatar';
 import { useToast } from '../../components/ui/Toast';
+import { ChangePasswordForm } from './ChangePasswordForm';
+import { ChangeEmailForm } from './ChangeEmailForm';
 import { cn } from '../../lib/utils';
 
 export default function SettingsPage() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState('profile');
 
   return (
     <div className="p-6 lg:p-8 max-w-3xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-h1 font-semibold text-ink-900">Settings</h1>
-        <p className="mt-1 text-body-lg text-ink-600">
-          Manage your profile and workspace preferences.
-        </p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-h1 font-semibold text-ink-900">Settings</h1>
+          <p className="mt-1 text-body-lg text-ink-600">
+            Manage your profile and workspace preferences.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="p-2 rounded-md text-ink-500 hover:text-ink-800 hover:bg-paper-150 transition-colors shrink-0"
+          aria-label="Back"
+        >
+          <X size={18} />
+        </button>
       </div>
 
-      <div className="flex gap-1 mb-6 border-b border-paper-300">
+      <div className="flex gap-1 mb-6 border-b border-paper-300 overflow-x-auto">
         <TabButton active={tab === 'profile'} onClick={() => setTab('profile')} icon={UserIcon}>
           Profile
         </TabButton>
+        <TabButton active={tab === 'security'} onClick={() => setTab('security')} icon={Lock}>
+          Security
+        </TabButton>
         <TabButton active={tab === 'workspace'} onClick={() => setTab('workspace')} icon={Building2}>
-          Workspace
+          Workspaces
         </TabButton>
       </div>
 
-      {tab === 'profile' ? <ProfileTab /> : <WorkspaceTab />}
+      {tab === 'profile' && <ProfileTab />}
+      {tab === 'security' && <SecurityTab />}
+      {tab === 'workspace' && <WorkspacesTab />}
     </div>
   );
 }
@@ -42,7 +61,7 @@ function TabButton({ active, onClick, icon: Icon, children }) {
       type="button"
       onClick={onClick}
       className={cn(
-        'inline-flex items-center gap-2 px-4 py-2 text-body-sm font-medium',
+        'inline-flex items-center gap-2 px-4 py-2 text-body-sm font-medium shrink-0',
         'border-b-2 -mb-px transition-colors',
         active
           ? 'text-signal-600 border-signal-500'
@@ -56,7 +75,7 @@ function TabButton({ active, onClick, icon: Icon, children }) {
 }
 
 function ProfileTab() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const toast = useToast();
   const [fullName, setFullName] = useState(user?.full_name || '');
   const [saving, setSaving] = useState(false);
@@ -66,6 +85,7 @@ function ProfileTab() {
     setSaving(true);
     try {
       await authApi.updateMe({ full_name: fullName.trim() });
+      await refreshUser();
       toast('Profile updated', { variant: 'success' });
     } catch {
       toast('Could not save profile.', { variant: 'error' });
@@ -75,74 +95,121 @@ function ProfileTab() {
   }
 
   if (!user) return null;
+  const unchanged = fullName === (user.full_name || '');
 
   return (
-    <Card className="p-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Avatar name={user.display_name} src={user.avatar} size="xl" />
-        <div>
-          <p className="text-h3 font-semibold text-ink-900">{user.display_name}</p>
-          <p className="text-body-sm text-ink-500">{user.email}</p>
+    <div className="space-y-6">
+      <Card className="p-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Avatar name={user.display_name} src={user.avatar} size="xl" />
+          <div>
+            <p className="text-h3 font-semibold text-ink-900">{user.display_name}</p>
+            <p className="text-body-sm text-ink-500">{user.email}</p>
+          </div>
         </div>
-      </div>
 
-      <form onSubmit={handleSave} className="space-y-4">
-        <Input
-          label="Full name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          placeholder="Your name"
-        />
-        <Input
-          label="Email"
-          value={user.email}
-          disabled
-          helper="Email cannot be changed."
-        />
-        <div className="flex justify-end">
-          <Button type="submit" isLoading={saving} disabled={fullName === user.full_name}>
-            Save changes
-          </Button>
-        </div>
-      </form>
-    </Card>
+        <form onSubmit={handleSave} className="space-y-4">
+          <Input
+            label="Full name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Your name"
+          />
+          <div className="flex justify-end">
+            <Button type="submit" isLoading={saving} disabled={unchanged}>
+              Save changes
+            </Button>
+          </div>
+        </form>
+      </Card>
+
+      <Card className="p-6">
+        <ChangeEmailForm currentEmail={user.email} />
+      </Card>
+    </div>
   );
 }
 
-function WorkspaceTab() {
-  const { current, workspaces } = useWorkspace();
+function SecurityTab() {
+  return (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <ChangePasswordForm />
+      </Card>
 
-  if (!current) {
+      <Card className="p-6">
+        <h3 className="text-h4 font-semibold text-ink-900 mb-2">Session security</h3>
+        <div className="space-y-3 text-body-sm text-ink-600">
+          <p>
+            <strong className="text-ink-800">Access tokens</strong> expire in 15 minutes
+            and are stored in memory only — never in localStorage.
+          </p>
+          <p>
+            <strong className="text-ink-800">Refresh tokens</strong> are stored in an
+            HttpOnly, SameSite cookie and cannot be read by JavaScript.
+          </p>
+          <p>
+            <strong className="text-ink-800">Signing out</strong> blacklists your
+            refresh token server-side.
+          </p>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function WorkspacesTab() {
+  const { workspaces, current, select } = useWorkspace();
+
+  if (workspaces.length === 0) {
     return (
       <Card className="p-6">
-        <p className="text-body-sm text-ink-600">No workspace selected.</p>
+        <p className="text-body-sm text-ink-600">
+          No workspaces yet. Create one from the workspace switcher.
+        </p>
       </Card>
     );
   }
 
   return (
-    <Card className="p-6 space-y-4">
-      <div>
-        <p className="text-overline text-ink-500 mb-1">NAME</p>
-        <p className="text-body text-ink-800">{current.name}</p>
-      </div>
-      <div>
-        <p className="text-overline text-ink-500 mb-1">SLUG</p>
-        <p className="text-body font-mono text-ink-800">{current.slug}</p>
-      </div>
-      <div>
-        <p className="text-overline text-ink-500 mb-1">MEMBERS</p>
-        <p className="text-body text-ink-800">{current.member_count}</p>
-      </div>
-      <div>
-        <p className="text-overline text-ink-500 mb-1">YOUR ROLE</p>
-        <p className="text-body text-ink-800 capitalize">{current.my_role}</p>
-      </div>
-      <div className="pt-4 border-t border-paper-200">
-        <p className="text-caption text-ink-500">
-          You have {workspaces.length} workspace{workspaces.length === 1 ? '' : 's'}.
-        </p>
-      </div>
-    </Card>
+    <div className="space-y-3">
+      {workspaces.map((w) => (
+        <Card key={w.id} className="p-5 flex items-center gap-4">
+          <span
+            className="w-10 h-10 rounded-md flex items-center justify-center text-h4 font-semibold shrink-0"
+            style={{ backgroundColor: 'var(--signal-50)', color: 'var(--signal-700)' }}
+          >
+            {w.name.charAt(0).toUpperCase()}
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="text-body-sm font-medium text-ink-800 truncate">
+                {w.name}
+              </p>
+              {w.id === current?.id && (
+                <span className="inline-flex items-center gap-1 text-caption text-signal-600">
+                  <Check size={11} /> Active
+                </span>
+              )}
+            </div>
+            <p className="text-caption text-ink-500 mt-0.5">
+              {w.member_count} member{w.member_count === 1 ? '' : 's'} · your role: {w.my_role}
+            </p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <Link to={`/projects`}>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={w.id === current?.id}
+                onClick={() => w.id !== current?.id && select(w.id)}
+              >
+                Open
+              </Button>
+            </Link>
+          </div>
+        </Card>
+      ))}
+    </div>
   );
 }

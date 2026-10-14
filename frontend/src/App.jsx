@@ -5,6 +5,7 @@ import { ProtectedRoute } from './routes/ProtectedRoute';
 import { PublicOnlyRoute } from './routes/PublicOnlyRoute';
 import { LoginPage } from './features/auth/LoginPage';
 import { RegisterPage } from './features/auth/RegisterPage';
+import { VerifyEmailChangePage } from './features/auth/VerifyEmailChangePage';
 import LandingPage from './pages/LandingPage';
 import NotFoundPage from './pages/NotFoundPage';
 import DashboardPage from './pages/DashboardPage';
@@ -17,7 +18,7 @@ import MembersPage from './features/workspaces/MembersPage';
 export default function App() {
   return (
     <Routes>
-      {/* Public landing — only for logged-out users */}
+      {/* Public landing */}
       <Route element={<PublicOnlyRoute />}>
         <Route path="/" element={<LandingPage />} />
       </Route>
@@ -27,6 +28,9 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Route>
+
+      {/* Public verification page — the token authenticates the action */}
+      <Route path="/verify-email-change" element={<VerifyEmailChangePage />} />
 
       {/* Protected app */}
       <Route element={<ProtectedRoute />}>
