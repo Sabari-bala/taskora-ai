@@ -53,9 +53,7 @@ export default function MembersPage() {
 
   const changeRole = useMutation({
     mutationFn: ({ memberId, role }) =>
-      workspacesApi.updateRole
-        ? workspacesApi.updateRole(current.id, memberId, role)
-        : Promise.reject(new Error('Not implemented')),
+      workspacesApi.updateRole(current.id, memberId, role),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workspace-members', current.id] });
       toast('Role updated', { variant: 'success' });
