@@ -31,7 +31,7 @@ export function CommentsList({ comments, currentUserId, taskId }) {
 
   return (
     <>
-      <ul className="space-y-4">
+      <ul className="space-y-5">
         {comments.map((c) => {
           const isMine = c.author?.id === currentUserId;
           return (
@@ -42,18 +42,18 @@ export function CommentsList({ comments, currentUserId, taskId }) {
                 size="sm"
               />
               <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <p className="text-body-sm font-medium text-ink-800">
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <span className="text-body-sm font-semibold text-ink-900">
                     {c.author?.display_name || 'Unknown'}
-                    {isMine && (
-                      <span className="ml-1.5 text-caption text-ink-500 font-normal">
-                        (you)
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-caption text-ink-500">
+                  </span>
+                  {isMine && (
+                    <span className="text-caption text-ink-500 font-normal">
+                      (you)
+                    </span>
+                  )}
+                  <span className="text-caption text-ink-500">
                     {formatRelative(c.created_at)}
-                  </p>
+                  </span>
                   {isMine && (
                     <button
                       type="button"
@@ -65,7 +65,7 @@ export function CommentsList({ comments, currentUserId, taskId }) {
                     </button>
                   )}
                 </div>
-                <p className="mt-1 text-body-sm text-ink-800 whitespace-pre-wrap break-words">
+                <p className="mt-1 text-body text-ink-800 whitespace-pre-wrap break-words leading-relaxed">
                   {c.body}
                 </p>
               </div>

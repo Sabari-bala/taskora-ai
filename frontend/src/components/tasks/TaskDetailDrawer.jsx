@@ -220,13 +220,11 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
 
                 {/* ─── Subtasks ─── */}
                 <SubtaskList
+                  parentTaskId={taskId}
+                  projectId={task?.project}
                   subtasks={subtasks}
                   isLoading={loadingSubtasks}
-                  onSubtaskClick={() => {
-                    /* TODO (Phase 24): open a nested drawer for the subtask.
-                     * For now, no-op — clicking a subtask is safe. */
-                  }}
-                  onAdd={() => setBreakdownOpen(true)}
+                  onOpenBreakdown={() => setBreakdownOpen(true)}
                 />
 
                 <div>

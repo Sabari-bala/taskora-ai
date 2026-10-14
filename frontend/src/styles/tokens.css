@@ -21,11 +21,11 @@
   --signal-700: #2E39A3;
   --signal-900: #1A2159;
 
-  /* ─── Ember (AI signature) ─────────────────── */
-  --ember-50:  #FFF1EC;
-  --ember-100: #FFE1D6;
-  --ember-500: #FF6B42;
-  --ember-600: #E5502C;
+  /* ─── Ember → Violet (AI signature) ────────── */
+  --ember-50:  #F3EEFF;
+  --ember-100: #E5DBFF;
+  --ember-500: #8B5CF6;
+  --ember-600: #7C3AED;
 
   /* ─── Semantic ─────────────────────────────── */
   --success: #0F9D58; --success-bg: #E6F4EA; --success-text: #0A6B3C;
@@ -47,12 +47,6 @@
   --priority-urgent: var(--danger);
 }
 
-/* ═══════════════════════════════════════════════
-   DARK MODE
-   Toggled by adding .dark to <html>.
-   Every Tailwind utility that references these vars
-   flips automatically — no `dark:` variant needed.
-   ═══════════════════════════════════════════════ */
 .dark {
   --paper-50:  #0E0E0D;
   --paper-100: #1A1A18;
@@ -74,10 +68,10 @@
   --signal-700: #A5ADFF;
   --signal-900: #DDE3FF;
 
-  --ember-50:  #2E1B12;
-  --ember-100: #462618;
-  --ember-500: #FF8055;
-  --ember-600: #FFA07A;
+  --ember-50:  #231C4B;
+  --ember-100: #2E2560;
+  --ember-500: #A78BFA;
+  --ember-600: #C4B5FD;
 
   --success: #2ECC71; --success-bg: #0D2E1A; --success-text: #7FE5A6;
   --warning: #F5B93D; --warning-bg: #3A2C0A; --warning-text: #F5D57D;
