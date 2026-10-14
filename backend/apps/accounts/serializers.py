@@ -24,12 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    """Creates a new user with proper password hashing and validation."""
-
     password = serializers.CharField(
-        write_only=True,
-        required=True,
-        style={"input_type": "password"},
+        write_only=True, required=True, style={"input_type": "password"},
     )
 
     class Meta:
@@ -51,26 +47,18 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    """Validates credentials for login. Does not authenticate directly."""
-
     email = serializers.EmailField()
     password = serializers.CharField(
-        write_only=True,
-        style={"input_type": "password"},
+        write_only=True, style={"input_type": "password"},
     )
 
 
 class PasswordChangeSerializer(serializers.Serializer):
-    """Change password. Requires the current password as proof."""
-
     old_password = serializers.CharField(
-        write_only=True,
-        style={"input_type": "password"},
+        write_only=True, style={"input_type": "password"},
     )
     new_password = serializers.CharField(
-        write_only=True,
-        min_length=8,
-        style={"input_type": "password"},
+        write_only=True, min_length=8, style={"input_type": "password"},
     )
 
     def validate_new_password(self, value):
@@ -86,8 +74,6 @@ class PasswordChangeSerializer(serializers.Serializer):
 
 
 class EmailChangeRequestSerializer(serializers.Serializer):
-    """Request an email change. Sends a verification link to the new address."""
-
     new_email = serializers.EmailField()
 
     def validate_new_email(self, value):
@@ -104,4 +90,4 @@ class EmailChangeRequestSerializer(serializers.Serializer):
 
 
 class EmailChangeVerifySerializer(serializers.Serializer):
-    token = serializers.CharField()
+    code = serializers.CharField(max_length=32, min_length=6)

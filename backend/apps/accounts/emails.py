@@ -7,14 +7,15 @@ from django.core.mail import send_mail
 logger = logging.getLogger("taskora")
 
 
-def send_email_change_verification(user, new_email, token):
-    """Send a verification link to the new email address.
+def send_email_change_verification(user, new_email, code):
+    """Send a verification link containing a short code to the new email.
 
-    In dev (console backend) the email prints to the Django terminal.
-    In prod (SMTP backend) it's delivered by the configured provider.
+    In dev (console backend) the email prints to the Django terminal,
+    and we ALSO log a dedicated, easy-to-find block with the code.
+    In prod (SMTP backend) it is delivered by the configured provider.
     """
     frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:5173").rstrip("/")
-    verify_url = f"{frontend_url}/verify-email-change?token={token}"
+    verify_url = f"{frontend_url}/verify-email-change?code={code}"
 
     subject = "Confirm your new email address — Taskora"
     message = (
@@ -22,18 +23,21 @@ def send_email_change_verification(user, new_email, token):
         f"You requested to change your Taskora email to {new_email}.\n\n"
         f"Click the link below to confirm. It expires in 24 hours.\n\n"
         f"{verify_url}\n\n"
-        f"If you didn't request this, you can safely ignore this email."
+        f"If you didn't request this, you can safely ignore this email.\n\n"
+        f"— Taskora"
     )
 
-    try:
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [new_email],
-            fail_silently=False,
-        )
-        logger.info("Email change verification sent to %s", new_email)
-    except Exception:
-        logger.exception("Failed to send verification email to %s", new_email)
-        raise
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [new_email],
+        fail_silently=False,
+    )
+
+    # Dedicated log block — easy to grep, easy to copy in dev.
+    logger.info("=" * 72)
+    logger.info("EMAIL VERIFICATION CODE: %s", code)
+    logger.info("Open this URL in your browser:")
+    logger.info("  %s", verify_url)
+    logger.info("=" * 72)

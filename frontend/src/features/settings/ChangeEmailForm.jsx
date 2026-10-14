@@ -21,10 +21,7 @@ export function ChangeEmailForm({ currentEmail }) {
     try {
       await authApi.requestEmailChange(newEmail.trim());
       setSent(true);
-      toast(
-        'Verification email sent. Check your inbox (or the Django terminal in dev).',
-        { variant: 'success', duration: 8000 }
-      );
+      toast('Verification email sent', { variant: 'success' });
     } catch (err) {
       const data = err?.response?.data;
       const detail =
@@ -52,19 +49,31 @@ export function ChangeEmailForm({ currentEmail }) {
       </div>
 
       {sent ? (
-        <div className="rounded-md border border-[var(--info)] bg-[var(--info-bg)] px-4 py-3 flex items-start gap-3">
-          <Info size={16} className="text-[var(--info)] mt-0.5 shrink-0" />
-          <div className="text-body-sm text-[var(--info-text)]">
-            <p className="font-medium">Check your new email inbox.</p>
-            <p className="mt-1">
-              We sent a verification link to <strong>{newEmail}</strong>. The
-              link expires in 24 hours. In dev, the email prints to the
-              Django server terminal.
+        <div className="rounded-md border border-[var(--success)] bg-[var(--success-bg)] px-4 py-3 flex items-start gap-3">
+          <Check size={16} className="text-[var(--success)] mt-0.5 shrink-0" />
+          <div className="text-body-sm flex-1 min-w-0">
+            <p className="font-medium text-[var(--success-text)]">
+              Verification email sent
             </p>
+            <p className="mt-1 text-[var(--success-text)]">
+              We sent a link to <strong>{newEmail}</strong>. Click it to confirm.
+              Expires in 24 hours.
+            </p>
+            <div className="mt-3 flex items-start gap-2 rounded border border-paper-300 bg-paper-100 px-3 py-2">
+              <Info size={13} className="text-ink-500 mt-0.5 shrink-0" />
+              <p className="text-caption text-ink-600">
+                Local development: the email is written to the Django server
+                terminal, not delivered. Look for the block{' '}
+                <code className="font-mono bg-paper-150 px-1 rounded">
+                  EMAIL VERIFICATION CODE
+                </code>
+                .
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => { setSent(false); setNewEmail(''); }}
-              className="mt-2 text-signal-500 hover:text-signal-600 font-medium"
+              className="mt-3 text-signal-500 hover:text-signal-600 font-medium text-body-sm"
             >
               Send to a different address
             </button>

@@ -5,6 +5,15 @@
 @tailwind utilities;
 
 @layer base {
+  /* Hide Microsoft Edge's native password-reveal button.
+   * We render our own persistent toggle in <Input>; the browser one
+   * only appears on type="password" and disappears once we switch the
+   * field to type="text" — bad UX. CSS is the only way to remove it. */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
+
   html {
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;

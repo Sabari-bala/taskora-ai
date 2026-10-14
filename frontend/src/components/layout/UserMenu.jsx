@@ -20,6 +20,15 @@ export function UserMenu() {
     navigate(path);
   }
 
+  async function handleLogout(e) {
+    e.preventDefault();          // keep the dropdown from auto-closing mid-await
+    setOpen(false);
+    await logout();
+    // Explicitly land on the public landing page.
+    // ProtectedRoute would otherwise bounce us to /login.
+    navigate('/', { replace: true });
+  }
+
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger asChild>
@@ -73,7 +82,7 @@ export function UserMenu() {
           </DropdownMenu.Item>
           <DropdownMenu.Separator className="h-px bg-paper-200 my-1" />
           <DropdownMenu.Item
-            onSelect={() => logout()}
+            onSelect={handleLogout}
             className="flex items-center gap-2 px-3 py-2 rounded text-body-sm text-[var(--danger-text)] hover:bg-[var(--danger-bg)] outline-none cursor-pointer"
           >
             <LogOut size={14} />

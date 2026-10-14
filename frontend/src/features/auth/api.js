@@ -11,6 +11,6 @@ export const authApi = {
     api.post('/auth/change-password/', data).then((r) => r.data),
   requestEmailChange: (newEmail) =>
     api.post('/auth/change-email/', { new_email: newEmail }).then((r) => r.data),
-  verifyEmailChange: (token) =>
-    api.post('/auth/verify-email-change/', { token }).then((r) => r.data),
+  verifyEmailChange: (code) =>
+    api.post('/auth/verify-email-change/', { code }).then((r) => r.data),
 };

@@ -7,21 +7,21 @@ import { Button } from '../../components/ui/Button';
 
 export function VerifyEmailChangePage() {
   const [params] = useSearchParams();
-  const token = params.get('token');
+  const code = params.get('code');
 
-  const [state, setState] = useState('loading'); // loading | success | error
+  const [state, setState] = useState('loading');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    if (!token) {
+    if (!code) {
       setState('error');
-      setMessage('Missing verification token.');
+      setMessage('Missing verification code.');
       return;
     }
 
     let cancelled = false;
     authApi
-      .verifyEmailChange(token)
+      .verifyEmailChange(code)
       .then((data) => {
         if (cancelled) return;
         setState('success');
@@ -32,12 +32,12 @@ export function VerifyEmailChangePage() {
         setState('error');
         setMessage(
           err?.response?.data?.detail ||
-          'This verification link is invalid or has expired.'
+          'This verification code is invalid or has expired.'
         );
       });
 
     return () => { cancelled = true; };
-  }, [token]);
+  }, [code]);
 
   return (
     <div className="min-h-screen bg-paper-50 flex items-center justify-center px-4 py-12">

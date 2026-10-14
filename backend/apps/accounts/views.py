@@ -1,8 +1,10 @@
 import logging
+import secrets
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
-from django.core import signing
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from drf_spectacular.utils import OpenApiResponse, extend_schema
@@ -14,6 +16,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .emails import send_email_change_verification
+from .models import EmailChangeRequest
 from .serializers import (
     EmailChangeRequestSerializer,
     EmailChangeVerifySerializer,
@@ -22,7 +25,6 @@ from .serializers import (
     RegisterSerializer,
     UserSerializer,
 )
-from .tokens import make_email_change_token, read_email_change_token
 
 User = get_user_model()
 logger = logging.getLogger("taskora")
@@ -51,16 +53,11 @@ def _clear_refresh_cookie(response):
 
 def _issue_tokens(user):
     refresh = RefreshToken.for_user(user)
-    return {
-        "access": str(refresh.access_token),
-        "refresh": refresh,
-    }
+    return {"access": str(refresh.access_token), "refresh": refresh}
 
 
 @extend_schema(
     summary="Register a new user",
-    description="Creates a new account and returns an access token. "
-    "Sets a refresh token as an HttpOnly cookie.",
     request=RegisterSerializer,
     responses={
         201: OpenApiResponse(description="Account created and logged in."),
@@ -249,18 +246,15 @@ class PasswordChangeView(APIView):
         logger.info("Password changed for user %s", user.email)
 
         return Response(
-            {
-                "detail": "Password updated. "
-                "Other sessions stay logged in until they expire."
-            },
+            {"detail": "Password updated successfully."},
             status=status.HTTP_200_OK,
         )
 
 
 @extend_schema(
     summary="Request an email change",
-    description="Sends a verification link to the new email address. "
-    "In dev, the link prints to the Django terminal.",
+    description="Creates a pending request and sends a short verification code "
+    "to the new email address.",
     request=EmailChangeRequestSerializer,
     tags=["auth"],
 )
@@ -274,10 +268,28 @@ class EmailChangeRequestView(APIView):
         serializer.is_valid(raise_exception=True)
         new_email = serializer.validated_data["new_email"]
 
-        token = make_email_change_token(request.user, new_email)
+        # Invalidate any previous pending request for this user
+        EmailChangeRequest.objects.filter(
+            user=request.user, used_at__isnull=True,
+        ).update(used_at=timezone.now())
+
+        # Generate a short, unique, URL-safe code
+        code = secrets.token_hex(6)  # 12 hex chars: a1b2c3d4e5f6
+        while EmailChangeRequest.objects.filter(code=code).exists():
+            code = secrets.token_hex(6)
+
+        req = EmailChangeRequest.objects.create(
+            user=request.user,
+            new_email=new_email,
+            code=code,
+            expires_at=timezone.now() + timedelta(hours=24),
+        )
+
         try:
-            send_email_change_verification(request.user, new_email, token)
+            send_email_change_verification(request.user, new_email, code)
         except Exception:
+            req.delete()
+            logger.exception("Email send failed for %s", new_email)
             return Response(
                 {"detail": "Could not send verification email. Try again later."},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -291,7 +303,7 @@ class EmailChangeRequestView(APIView):
 
 @extend_schema(
     summary="Verify an email change",
-    description="Consumes a token from the verification link and updates the email.",
+    description="Consumes a short code and updates the user's email.",
     request=EmailChangeVerifySerializer,
     tags=["auth"],
 )
@@ -302,42 +314,56 @@ class EmailChangeVerifyView(APIView):
     def post(self, request):
         serializer = EmailChangeVerifySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        token = serializer.validated_data["token"]
+        code = serializer.validated_data["code"].strip()
 
-        try:
-            data = read_email_change_token(token)
-        except signing.SignatureExpired:
+        req = (
+            EmailChangeRequest.objects
+            .filter(code=code)
+            .select_related("user")
+            .first()
+        )
+
+        if req is None:
             return Response(
-                {"detail": "This verification link has expired. Request a new one."},
+                {"detail": "This verification code is invalid."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except signing.BadSignature:
+        if req.used_at is not None:
             return Response(
-                {"detail": "This verification link is invalid."},
+                {"detail": "This verification code has already been used."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if req.expires_at < timezone.now():
+            return Response(
+                {"detail": "This verification code has expired. Request a new one."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        try:
-            user = User.objects.get(id=data["user_id"])
-        except User.DoesNotExist:
-            return Response(
-                {"detail": "User no longer exists."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        new_email = data["new_email"].lower()
-        if User.objects.filter(email__iexact=new_email).exclude(id=user.id).exists():
+        # Re-verify the new email is still available
+        if (
+            User.objects
+            .filter(email__iexact=req.new_email)
+            .exclude(id=req.user_id)
+            .exists()
+        ):
+            req.used_at = timezone.now()
+            req.save(update_fields=["used_at"])
             return Response(
                 {"detail": "That email is now in use by another account."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        user = req.user
         old_email = user.email
-        user.email = new_email
+        user.email = req.new_email.lower()
         user.save(update_fields=["email"])
-        logger.info("Email changed: %s -> %s", old_email, new_email)
+
+        req.used_at = timezone.now()
+        req.save(update_fields=["used_at"])
+
+        logger.info("Email changed: %s -> %s", old_email, user.email)
 
         return Response(
-            {"detail": "Email updated successfully.", "email": new_email},
+            {"detail": "Email updated successfully.", "email": user.email},
             status=status.HTTP_200_OK,
         )
