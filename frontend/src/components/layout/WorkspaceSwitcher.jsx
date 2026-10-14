@@ -46,7 +46,8 @@ export function WorkspaceSwitcher() {
             side="bottom"
             align="start"
             sideOffset={4}
-            className="z-50 w-[252px] bg-paper-100 border border-paper-300 rounded-md shadow-md p-1 animate-slide-up"
+            className="z-50 w-[252px] bg-paper-100 border border-paper-300 rounded-md p-1 animate-slide-up"
+            style={{ boxShadow: 'var(--shadow-lg)' }}
           >
             {workspaces.length === 0 && (
               <p className="px-3 py-2 text-body-sm text-ink-500">No workspaces yet</p>
@@ -66,9 +67,7 @@ export function WorkspaceSwitcher() {
                   {w.name.charAt(0).toUpperCase()}
                 </span>
                 <span className="flex-1 truncate text-ink-800">{w.name}</span>
-                {w.id === current?.id && (
-                  <Check size={14} className="text-signal-500 shrink-0" />
-                )}
+                {w.id === current?.id && <Check size={14} className="text-signal-500 shrink-0" />}
               </button>
             ))}
 

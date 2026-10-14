@@ -40,9 +40,7 @@ export function UserMenu() {
         >
           <Avatar name={user.display_name} src={user.avatar} size="sm" />
           <div className="flex-1 min-w-0">
-            <p className="text-body-sm font-medium text-ink-800 truncate">
-              {user.display_name}
-            </p>
+            <p className="text-body-sm font-medium text-ink-800 truncate">{user.display_name}</p>
           </div>
         </button>
       </DropdownMenu.Trigger>
@@ -52,12 +50,11 @@ export function UserMenu() {
           side="top"
           align="start"
           sideOffset={4}
-          className="z-50 w-[240px] bg-paper-100 border border-paper-300 rounded-md shadow-md p-1 animate-slide-up"
+          className="z-50 w-[240px] bg-paper-100 border border-paper-300 rounded-md p-1 animate-slide-up"
+          style={{ boxShadow: 'var(--shadow-lg)' }}
         >
           <div className="px-3 py-2">
-            <p className="text-body-sm font-medium text-ink-800">
-              {user.display_name}
-            </p>
+            <p className="text-body-sm font-medium text-ink-800">{user.display_name}</p>
             <p className="text-caption text-ink-500 truncate">{user.email}</p>
           </div>
           <DropdownMenu.Separator className="h-px bg-paper-200 my-1" />
@@ -69,10 +66,7 @@ export function UserMenu() {
             Settings
           </DropdownMenu.Item>
           <DropdownMenu.Item
-            onSelect={(e) => {
-              e.preventDefault();
-              toggleTheme();
-            }}
+            onSelect={(e) => { e.preventDefault(); toggleTheme(); }}
             className="flex items-center gap-2 px-3 py-2 rounded text-body-sm text-ink-600 hover:bg-paper-150 outline-none cursor-pointer"
           >
             {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}

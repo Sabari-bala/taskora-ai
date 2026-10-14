@@ -42,7 +42,8 @@ export function NotificationPanel() {
           side="bottom"
           align="end"
           sideOffset={6}
-          className="z-50 w-[360px] bg-paper-100 border border-paper-300 rounded-md shadow-lg overflow-hidden animate-slide-up"
+          className="z-50 w-[360px] bg-paper-100 border border-paper-300 rounded-md overflow-hidden animate-slide-up"
+          style={{ boxShadow: 'var(--shadow-lg)' }}
         >
           <div className="flex items-center justify-between px-4 h-11 border-b border-paper-200">
             <p className="text-body-sm font-semibold text-ink-900">Notifications</p>
@@ -64,11 +65,7 @@ export function NotificationPanel() {
                 <Spinner size={20} className="text-signal-500" />
               </div>
             ) : notifications.length === 0 ? (
-              <EmptyState
-                icon={Bell}
-                title="You're all caught up"
-                description="Notifications about your tasks will appear here."
-              />
+              <EmptyState icon={Bell} title="You're all caught up" description="Notifications about your tasks will appear here." />
             ) : (
               <ul className="divide-y divide-paper-200">
                 {notifications.slice(0, 5).map((n) => (
@@ -76,22 +73,13 @@ export function NotificationPanel() {
                     <button
                       type="button"
                       onClick={() => !n.is_read && markRead.mutate(n.id)}
-                      className={cn(
-                        'w-full text-left px-4 py-3 hover:bg-paper-50 transition-colors',
-                        !n.is_read && 'bg-signal-50/50'
-                      )}
+                      className={cn('w-full text-left px-4 py-3 hover:bg-paper-50 transition-colors', !n.is_read && 'bg-signal-50/50')}
                     >
                       <div className="flex items-start gap-2">
-                        {!n.is_read && (
-                          <span className="mt-1.5 w-2 h-2 rounded-full bg-signal-500 shrink-0" />
-                        )}
+                        {!n.is_read && <span className="mt-1.5 w-2 h-2 rounded-full bg-signal-500 shrink-0" />}
                         <div className={cn('flex-1 min-w-0', n.is_read && 'ml-4')}>
-                          <p className="text-body-sm text-ink-800 leading-snug">
-                            {n.message || n.verb.replace('_', ' ')}
-                          </p>
-                          <p className="text-caption text-ink-500 mt-0.5">
-                            {formatRelative(n.created_at)}
-                          </p>
+                          <p className="text-body-sm text-ink-800 leading-snug">{n.message || n.verb.replace('_', ' ')}</p>
+                          <p className="text-caption text-ink-500 mt-0.5">{formatRelative(n.created_at)}</p>
                         </div>
                       </div>
                     </button>

@@ -2,7 +2,7 @@
 
 > An AI-powered project workspace for modern teams — plan smarter, ship faster.
 
-![Status](https://img.shields.io/badge/status-in%20development-yellow)
+![Status](https://img.shields.io/badge/status-beta-8B5CF6)
 ![Backend](https://img.shields.io/badge/backend-Django%205-092E20?logo=django)
 ![Frontend](https://img.shields.io/badge/frontend-React%2018-61DAFB?logo=react)
 ![Database](https://img.shields.io/badge/database-PostgreSQL-336791?logo=postgresql)
@@ -203,4 +203,4 @@ Full details in [`docs/architecture/`](docs/architecture/).
 
 ---
 
-Built as a flagship portfolio project. Licensed under the [MIT License](LICENSE).
+Licensed under the [MIT License](LICENSE).

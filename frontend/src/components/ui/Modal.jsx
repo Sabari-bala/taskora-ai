@@ -11,15 +11,19 @@ export function Modal({ open, onOpenChange, title, description, children, size =
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/40 z-40 animate-fade-in" />
+        <Dialog.Overlay
+          className="fixed inset-0 z-40 animate-fade-in"
+          style={{ backgroundColor: 'var(--overlay)' }}
+        />
         <Dialog.Content
           id="taskora-dialog-content"
           className={cn(
             'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50',
-            'bg-paper-100 rounded-lg shadow-lg border border-paper-300',
+            'bg-paper-100 rounded-lg border border-paper-300',
             'w-[calc(100vw-32px)] animate-slide-up',
             sizes[size] || sizes.md
           )}
+          style={{ boxShadow: 'var(--shadow-lg)' }}
         >
           <div className="flex items-start justify-between p-5 border-b border-paper-200">
             <div>

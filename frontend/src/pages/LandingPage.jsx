@@ -12,16 +12,12 @@ import {
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-paper-50 flex flex-col">
-      {/* Nav */}
       <header className="border-b border-paper-200">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-signal-500 flex items-center justify-center">
               <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-                <path
-                  d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"
-                  fill="white"
-                />
+                <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="white" />
               </svg>
             </span>
             <span className="text-h4 font-semibold text-ink-900">Taskora AI</span>
@@ -43,7 +39,6 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero */}
       <main className="flex-1">
         <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
           <div className="inline-flex items-center gap-2 px-3 h-7 rounded-full bg-ember-50 border border-ember-100 text-caption text-ember-600 font-medium mb-6">
@@ -74,7 +69,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Features */}
         <section className="max-w-6xl mx-auto px-6 pb-24">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Feature
@@ -119,8 +113,12 @@ export default function LandingPage() {
 
       <footer className="border-t border-paper-200 py-8">
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between text-caption text-ink-500 flex-wrap gap-3">
-          <p>Taskora AI · An AI-native project workspace.</p>
-          <p>Built as a portfolio project.</p>
+          <p>© 2026 Taskora AI. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <a href="#" className="hover:text-ink-800 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-ink-800 transition-colors">Terms</a>
+            <a href="mailto:hello@taskora.local" className="hover:text-ink-800 transition-colors">Contact</a>
+          </div>
         </div>
       </footer>
     </div>
