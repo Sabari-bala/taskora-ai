@@ -21,13 +21,13 @@
   --signal-700: #2E39A3;
   --signal-900: #1A2159;
 
-  /* ─── Ember → Teal (AI signature) ──────────── */
+  /* ─── Ember → Violet (AI signature) ────────── */
   /* Panel backgrounds are cool and quiet — the AI identity is carried by
    * the accent (500/600), the icon, and the labels. */
-  --ember-50:  #F0FDFA;
-  --ember-100: #CCFBF1;
-  --ember-500: #0D9488;
-  --ember-600: #0F766E;
+  --ember-50:  #F4F4F9;
+  --ember-100: #E4E4EF;
+  --ember-500: #7C3AED;
+  --ember-600: #6D28D9;
 
   /* ─── Semantic ─────────────────────────────── */
   --success: #0F9D58; --success-bg: #E6F4EA; --success-text: #0A6B3C;
@@ -79,10 +79,10 @@
   --signal-700: #A5ADFF;
   --signal-900: #DDE3FF;
 
-  --ember-50:  #0F2724;
-  --ember-100: #134E4A;
-  --ember-500: #2DD4BF;
-  --ember-600: #5EEAD4;
+  --ember-50:  #1E1E2E;
+  --ember-100: #2A2A3D;
+  --ember-500: #A78BFA;
+  --ember-600: #C4B5FD;
 
   --success: #2ECC71; --success-bg: #0D2E1A; --success-text: #7FE5A6;
   --warning: #F5B93D; --warning-bg: #3A2C0A; --warning-text: #F5D57D;

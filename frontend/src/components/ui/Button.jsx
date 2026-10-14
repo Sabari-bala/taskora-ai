@@ -6,7 +6,7 @@ const variants = {
   secondary: 'bg-paper-100 text-ink-800 border border-paper-300 hover:bg-paper-150 active:bg-paper-200',
   ghost:     'text-ink-600 hover:bg-paper-150 active:bg-paper-200',
   danger:    'bg-danger text-white hover:opacity-90 active:opacity-100',
-  ai:        'bg-ember-500 text-white hover:bg-ember-600 active:bg-ember-600 shadow-[0_0_0_3px_rgba(255,107,66,0.15)]',
+  ai:        'bg-ember-500 text-white hover:bg-ember-600 active:bg-ember-600 shadow-[0_1px_2px_rgba(15,15,14,0.08),0_0_0_1px_rgba(15,15,14,0.04)]',
   link:      'text-signal-500 hover:text-signal-600 underline-offset-4 hover:underline p-0 h-auto',
 };
 
