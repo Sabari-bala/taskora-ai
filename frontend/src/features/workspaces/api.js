@@ -5,6 +5,10 @@ export const workspacesApi = {
   get:    (id) => api.get(`/workspaces/${id}/`).then((r) => r.data),
   create: (data) => api.post('/workspaces/', data).then((r) => r.data),
   update: (id, data) => api.patch(`/workspaces/${id}/`, data).then((r) => r.data),
-  members:(id) => api.get(`/workspaces/${id}/members/`).then((r) => r.data),
-  invite: (id, data) => api.post(`/workspaces/${id}/members/`, data).then((r) => r.data),
+  members: (id) => api.get(`/workspaces/${id}/members/`).then((r) => r.data),
+  invite:  (id, data) => api.post(`/workspaces/${id}/members/`, data).then((r) => r.data),
+  updateRole: (workspaceId, memberId, role) =>
+    api.patch(`/workspaces/${workspaceId}/members/${memberId}/`, { role }).then((r) => r.data),
+  removeMember: (workspaceId, memberId) =>
+    api.delete(`/workspaces/${workspaceId}/members/${memberId}/`).then((r) => r.data),
 };

@@ -6,6 +6,7 @@ export const tasksApi = {
   get: (id) => api.get(`/tasks/${id}/`).then((r) => r.data),
   create: (data) => api.post('/tasks/', data).then((r) => r.data),
   update: (id, data) => api.patch(`/tasks/${id}/`, data).then((r) => r.data),
+  remove: (id) => api.delete(`/tasks/${id}/`).then((r) => r.data),
   reorder: (id, payload) =>
     api.post(`/tasks/${id}/reorder/`, payload).then((r) => r.data),
   activity: (id) =>
@@ -14,4 +15,6 @@ export const tasksApi = {
     api.get(`/tasks/${id}/comments/`).then((r) => r.data),
   addComment: (id, body) =>
     api.post(`/tasks/${id}/comments/`, { body }).then((r) => r.data),
+  deleteComment: (taskId, commentId) =>
+    api.delete(`/tasks/${taskId}/comments/${commentId}/`).then((r) => r.data),
 };

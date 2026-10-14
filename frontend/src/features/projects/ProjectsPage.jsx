@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Folder, Sparkles, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useProjects } from './hooks';
 import { ProjectCard } from '../../components/projects/ProjectCard';
@@ -9,13 +10,16 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { PlannerModal } from '../ai/PlannerModal';
+import { NewProjectModal } from './NewProjectModal';
 
 export default function ProjectsPage() {
+  const navigate = useNavigate();
   const { current } = useWorkspace();
   const { data, isLoading, error, refetch } = useProjects(
     current ? { workspace: current.id } : {}
   );
   const [plannerOpen, setPlannerOpen] = useState(false);
+  const [newOpen, setNewOpen] = useState(false);
 
   const projects = data?.results || [];
 
@@ -33,20 +37,29 @@ export default function ProjectsPage() {
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto">
-      <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
-        <div>
+      <div className="mb-6 flex items-start justify-between gap-3 flex-wrap">
+        <div className="min-w-0">
           <h1 className="text-h1 font-semibold text-ink-900">Projects</h1>
           <p className="mt-1 text-body-lg text-ink-600">
             All projects in {current.name}.
           </p>
         </div>
-        <Button
-          variant="ai"
-          leadingIcon={Sparkles}
-          onClick={() => setPlannerOpen(true)}
-        >
-          Plan with AI
-        </Button>
+        <div className="flex gap-2 shrink-0">
+          <Button
+            variant="secondary"
+            leadingIcon={Plus}
+            onClick={() => setNewOpen(true)}
+          >
+            New project
+          </Button>
+          <Button
+            variant="ai"
+            leadingIcon={Sparkles}
+            onClick={() => setPlannerOpen(true)}
+          >
+            Plan with AI
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -68,15 +81,16 @@ export default function ProjectsPage() {
           <EmptyState
             icon={Folder}
             title="No projects yet"
-            description="Describe an idea and let AI propose the first project structure."
+            description="Create one manually, or describe an idea and let AI structure it."
             action={
-              <Button
-                variant="ai"
-                leadingIcon={Sparkles}
-                onClick={() => setPlannerOpen(true)}
-              >
-                Plan with AI
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="secondary" leadingIcon={Plus} onClick={() => setNewOpen(true)}>
+                  New project
+                </Button>
+                <Button variant="ai" leadingIcon={Sparkles} onClick={() => setPlannerOpen(true)}>
+                  Plan with AI
+                </Button>
+              </div>
             }
           />
         </Card>
@@ -92,6 +106,13 @@ export default function ProjectsPage() {
         open={plannerOpen}
         onOpenChange={setPlannerOpen}
         workspaceId={current.id}
+      />
+
+      <NewProjectModal
+        open={newOpen}
+        onOpenChange={setNewOpen}
+        workspaceId={current.id}
+        onCreated={(p) => navigate(`/projects/${p.id}`)}
       />
     </div>
   );

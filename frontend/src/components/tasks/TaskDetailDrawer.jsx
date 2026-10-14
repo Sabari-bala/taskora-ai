@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Trash2 } from 'lucide-react';
 import { Drawer } from '../ui/Drawer';
 import { Avatar } from '../ui/Avatar';
 import { Spinner } from '../ui/Spinner';
 import { Button } from '../ui/Button';
+import { DeleteConfirmModal } from '../ui/DeleteConfirmModal';
 import { CommentsList } from './CommentsList';
 import { CommentComposer } from './CommentComposer';
 import { ActivityTimeline } from './ActivityTimeline';
@@ -17,6 +18,7 @@ import {
 import {
   useUpdateTask,
   useAddComment,
+  useDeleteTask,
 } from '../../features/tasks/mutations';
 import { useAuth } from '../../hooks/useAuth';
 import { useWorkspace } from '../../hooks/useWorkspace';
@@ -40,10 +42,12 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
   const { data: commentsPage } = useTaskComments(enabled ? taskId : null);
   const updateMutation = useUpdateTask();
   const commentMutation = useAddComment(taskId);
+  const deleteMutation = useDeleteTask(task?.project);
 
   const [titleDraft, setTitleDraft] = useState('');
   const [descDraft, setDescDraft] = useState('');
   const [breakdownOpen, setBreakdownOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -82,6 +86,17 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
     }
   }
 
+  async function handleDelete() {
+    try {
+      await deleteMutation.mutateAsync(taskId);
+      toast('Task deleted', { variant: 'success' });
+      setConfirmDelete(false);
+      onOpenChange(false);
+    } catch {
+      toast('Could not delete task.', { variant: 'error' });
+    }
+  }
+
   return (
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
@@ -91,8 +106,7 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
           </div>
         ) : (
           <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="sticky top-0 bg-paper-100 border-b border-paper-200 px-6 py-4 flex items-start justify-between gap-4 z-10">
+            <div className="sticky top-0 bg-paper-100 border-b border-paper-200 px-4 sm:px-6 py-4 flex items-start justify-between gap-3 z-10">
               <div className="flex-1 min-w-0">
                 <p className="text-caption font-mono text-ink-500 mb-2">
                   {task.project?.key
@@ -107,20 +121,28 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                   className="w-full text-h3 font-semibold text-ink-900 bg-transparent border-none focus:outline-none focus:bg-paper-50 focus:ring-0 rounded px-1 -mx-1 py-0.5"
                 />
               </div>
-              <button
-                type="button"
-                onClick={() => onOpenChange(false)}
-                className="p-1.5 rounded text-ink-500 hover:text-ink-800 hover:bg-paper-150 transition-colors shrink-0"
-                aria-label="Close"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                  className="p-1.5 rounded text-ink-500 hover:text-[var(--danger)] hover:bg-[var(--danger-bg)] transition-colors"
+                  aria-label="Delete task"
+                >
+                  <Trash2 size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenChange(false)}
+                  className="p-1.5 rounded text-ink-500 hover:text-ink-800 hover:bg-paper-150 transition-colors"
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
-            {/* Body */}
             <div className="flex-1 overflow-y-auto">
-              <div className="px-6 py-5 space-y-6">
-                {/* AI actions */}
+              <div className="px-4 sm:px-6 py-5 space-y-6">
                 <div className="flex items-center gap-2 flex-wrap">
                   <Button
                     variant="ai"
@@ -132,7 +154,6 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                   </Button>
                 </div>
 
-                {/* Metadata grid */}
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Status">
                     <select
@@ -162,7 +183,7 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                     <AssigneePicker
                       workspaceId={resolvedWorkspaceId}
                       value={task.assignee}
-                      onChange={(user) => updateField('assignee', user?.id || null)}
+                      onChange={(u) => updateField('assignee', u?.id || null)}
                     />
                   </Field>
 
@@ -181,22 +202,16 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                   <PriorityPill priority={task.priority} />
                   {task.assignee && (
                     <span className="inline-flex items-center gap-1.5 text-caption text-ink-600">
-                      <Avatar
-                        name={task.assignee.display_name}
-                        src={task.assignee.avatar}
-                        size="xs"
-                      />
+                      <Avatar name={task.assignee.display_name} src={task.assignee.avatar} size="xs" />
                       {task.assignee.display_name}
                     </span>
                   )}
                 </div>
 
-                {/* AI Summarize */}
                 <div>
                   <SummarizePanel taskId={taskId} />
                 </div>
 
-                {/* Description */}
                 <div>
                   <p className="text-overline text-ink-500 mb-2">DESCRIPTION</p>
                   <textarea
@@ -208,12 +223,11 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                   />
                 </div>
 
-                {/* Comments */}
                 <div>
                   <p className="text-overline text-ink-500 mb-3">
                     COMMENTS · {comments.length}
                   </p>
-                  <CommentsList comments={comments} currentUserId={user?.id} />
+                  <CommentsList comments={comments} currentUserId={user?.id} taskId={taskId} />
                   <div className="mt-4">
                     <CommentComposer
                       onSubmit={handleComment}
@@ -222,7 +236,6 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
                   </div>
                 </div>
 
-                {/* Activity */}
                 <div>
                   <p className="text-overline text-ink-500 mb-3">ACTIVITY</p>
                   <ActivityTimeline activities={activity || []} />
@@ -238,6 +251,16 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
         open={breakdownOpen}
         onOpenChange={setBreakdownOpen}
         projectId={task?.project}
+      />
+
+      <DeleteConfirmModal
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Delete this task?"
+        description="The task, its comments, and its activity will be removed."
+        onConfirm={handleDelete}
+        isConfirming={deleteMutation.isPending}
+        confirmLabel="Delete task"
       />
     </>
   );

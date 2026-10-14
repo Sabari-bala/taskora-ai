@@ -9,6 +9,7 @@ import ProjectsPage from './features/projects/ProjectsPage';
 import ProjectDetailPage from './features/projects/ProjectDetailPage';
 import MyTasksPage from './features/tasks/MyTasksPage';
 import SettingsPage from './features/settings/SettingsPage';
+import MembersPage from './features/workspaces/MembersPage';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/tasks" element={<MyTasksPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/:id" element={<ProjectDetailPage />} />
+          <Route path="/members" element={<MembersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>

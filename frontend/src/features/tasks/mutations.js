@@ -62,12 +62,14 @@ export function useUpdateTask() {
   });
 }
 
-export function useDeleteTask() {
+export function useDeleteTask(projectId) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id) => tasksApi.update(id, { status: 'backlog' }) && null,
+    mutationFn: (id) => tasksApi.remove(id),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['board'] });
+      qc.invalidateQueries({ queryKey: ['board', projectId] });
+      qc.invalidateQueries({ queryKey: ['projects'] });
+      qc.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }
@@ -79,6 +81,16 @@ export function useAddComment(taskId) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['task-comments', taskId] });
       qc.invalidateQueries({ queryKey: ['task-activity', taskId] });
+    },
+  });
+}
+
+export function useDeleteComment(taskId) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (commentId) => tasksApi.deleteComment(taskId, commentId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['task-comments', taskId] });
     },
   });
 }
