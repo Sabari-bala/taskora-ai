@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { authApi } from './api';
+import { useAuth } from '../../hooks/useAuth';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 
 export function VerifyEmailChangePage() {
   const [params] = useSearchParams();
   const code = params.get('code');
+  const { isAuthenticated, refreshUser } = useAuth();
 
   const [state, setState] = useState('loading');
   const [message, setMessage] = useState('');
@@ -22,8 +24,13 @@ export function VerifyEmailChangePage() {
     let cancelled = false;
     authApi
       .verifyEmailChange(code)
-      .then((data) => {
+      .then(async (data) => {
         if (cancelled) return;
+        // The DB now has the new email — but our in-memory user is stale.
+        // Pull fresh user data so Settings and the sidebar show the change.
+        if (isAuthenticated) {
+          try { await refreshUser(); } catch { /* non-fatal */ }
+        }
         setState('success');
         setMessage(data.detail || 'Email updated successfully.');
       })
@@ -37,6 +44,7 @@ export function VerifyEmailChangePage() {
       });
 
     return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
   return (

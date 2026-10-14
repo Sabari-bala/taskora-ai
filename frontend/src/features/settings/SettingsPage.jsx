@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User as UserIcon, Lock, Building2, Check, X } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
@@ -15,7 +15,15 @@ import { cn } from '../../lib/utils';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
   const [tab, setTab] = useState('profile');
+
+  /* Always pull fresh user data when Settings mounts.
+   * The email may have changed in another tab (verification link). */
+  useEffect(() => {
+    refreshUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="p-6 lg:p-8 max-w-3xl mx-auto">
@@ -79,6 +87,10 @@ function ProfileTab() {
   const toast = useToast();
   const [fullName, setFullName] = useState(user?.full_name || '');
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setFullName(user?.full_name || '');
+  }, [user?.id, user?.full_name]);
 
   async function handleSave(e) {
     e.preventDefault();
