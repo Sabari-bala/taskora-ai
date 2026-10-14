@@ -113,12 +113,13 @@ export default function LandingPage() {
 
       <footer className="border-t border-paper-200 py-8">
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between text-caption text-ink-500 flex-wrap gap-3">
-          <p>© 2026 Taskora AI. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <a href="#" className="hover:text-ink-800 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-ink-800 transition-colors">Terms</a>
-            <a href="mailto:hello@taskora.local" className="hover:text-ink-800 transition-colors">Contact</a>
-          </div>
+          <p>© 2026 Taskora AI</p>
+          <a
+            href="mailto:sabaribala7733@gmail.com?subject=Taskora%20AI%20%E2%80%94%20Hello"
+            className="hover:text-ink-800 transition-colors font-medium"
+          >
+            Get in touch →
+          </a>
         </div>
       </footer>
     </div>
