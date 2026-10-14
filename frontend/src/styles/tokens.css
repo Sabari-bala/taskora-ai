@@ -22,8 +22,10 @@
   --signal-900: #1A2159;
 
   /* ─── Ember → Violet (AI) ─────────────────── */
-  --ember-50:  #F3EEFF;
-  --ember-100: #E5DBFF;
+  /* Panel backgrounds are cool/neutral — the violet identity comes from
+   * the accent (500/600), the icon, and the text. Backgrounds stay quiet. */
+  --ember-50:  #F4F4F9;
+  --ember-100: #E4E4EF;
   --ember-500: #8B5CF6;
   --ember-600: #7C3AED;
 
@@ -77,8 +79,8 @@
   --signal-700: #A5ADFF;
   --signal-900: #DDE3FF;
 
-  --ember-50:  #231C4B;
-  --ember-100: #2E2560;
+  --ember-50:  #1E1E2E;
+  --ember-100: #2A2A3D;
   --ember-500: #A78BFA;
   --ember-600: #C4B5FD;
 
