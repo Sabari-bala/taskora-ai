@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
   push:
@@ -8,12 +8,10 @@ on:
 
 jobs:
   backend:
-    name: Backend (lint + tests)
+    name: Backend (tests + lint)
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -32,15 +30,15 @@ jobs:
 
       - name: Run tests
         working-directory: backend
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.test
         run: pytest
 
   frontend:
-    name: Frontend (build)
+    name: Frontend (build + lint)
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
