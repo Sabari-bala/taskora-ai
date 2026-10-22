@@ -1,13 +1,11 @@
 
 '''Tests for workspaces API endpoints.'''
 import pytest
-from django.urls import reverse
 from rest_framework.test import APIClient
 
 from apps.accounts.models import User
 from apps.notifications.models import Notification
 from apps.workspaces.models import Workspace, WorkspaceMember
-
 
 pytestmark = pytest.mark.django_db
 

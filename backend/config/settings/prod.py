@@ -15,8 +15,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # ─── Cookie Configuration for Cross-Domain (Vercel + Render) ─
-# SameSite=None is required for the frontend (Vercel) to send the 
-# refresh cookie to the backend (Render). Secure=True is mandatory 
+# SameSite=None is required for the frontend (Vercel) to send the
+# refresh cookie to the backend (Render). Secure=True is mandatory
 # when SameSite=None.
 REFRESH_COOKIE_SAMESITE = "None"
 REFRESH_COOKIE_SECURE = True

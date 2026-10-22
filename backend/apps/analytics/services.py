@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db.models import Count, Q
+from django.db.models import Q
 from django.utils import timezone
 
 from apps.projects.models import Project, Task

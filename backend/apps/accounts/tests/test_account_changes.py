@@ -10,7 +10,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.accounts.models import EmailChangeRequest, User
 
-
 pytestmark = pytest.mark.django_db
 
 

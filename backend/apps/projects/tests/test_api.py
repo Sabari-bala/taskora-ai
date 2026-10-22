@@ -5,9 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.accounts.models import User
 from apps.projects.models import Label, Milestone, Project
-from apps.workspaces.models import WorkspaceMember
 from apps.workspaces.services import create_workspace
-
 
 pytestmark = pytest.mark.django_db
 

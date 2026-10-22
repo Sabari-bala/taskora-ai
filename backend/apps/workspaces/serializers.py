@@ -62,10 +62,10 @@ class AddMemberSerializer(serializers.Serializer):
     def validate_email(self, value):
         try:
             user = User.objects.get(email__iexact=value)
-        except User.DoesNotExist:
+        except User.DoesNotExist as exc:
             raise serializers.ValidationError(
                 "No user with this email address exists."
-            )
+            ) from exc
         self._user = user
         return value.lower()
 

@@ -6,7 +6,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.accounts.models import User
 from apps.notifications.models import Notification
 
-
 pytestmark = pytest.mark.django_db
 
 

@@ -8,7 +8,6 @@ from django.conf import settings
 from ..exceptions import AIProviderError, AIRateLimitError, AITimeoutError
 from .base import AIProvider
 
-
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 

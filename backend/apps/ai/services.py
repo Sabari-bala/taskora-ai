@@ -33,7 +33,6 @@ from .models import AIInteraction
 from .providers import get_provider
 from .validation import _try_extract_json
 
-
 DEFAULT_TIMEOUT = 20
 DEFAULT_HOURLY_LIMIT = 30
 

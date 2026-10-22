@@ -117,6 +117,6 @@ class PlanProjectCommitView(APIView):
                 tasks=data["tasks"],
             )
         except ValueError as exc:
-            raise ValidationError({"project_key": str(exc)})
+            raise ValidationError({"project_key": str(exc)}) from exc
 
         return Response(result, status=status.HTTP_201_CREATED)

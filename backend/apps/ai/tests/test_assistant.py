@@ -10,7 +10,6 @@ from apps.ai.providers.base import AIProvider
 from apps.projects.models import Project, Task
 from apps.workspaces.services import create_workspace
 
-
 pytestmark = pytest.mark.django_db
 
 

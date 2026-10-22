@@ -13,7 +13,6 @@ from jsonschema import Draft7Validator
 
 from .exceptions import AIValidationError
 
-
 _FENCE_PATTERN = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
 
 

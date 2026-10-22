@@ -6,12 +6,10 @@ from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.accounts.models import User
-from apps.ai.models import AIInteraction
 from apps.ai.providers.base import AIProvider
 from apps.projects.models import Label, Milestone, Project, Task
 from apps.workspaces.models import WorkspaceMember
 from apps.workspaces.services import add_member, create_workspace
-
 
 pytestmark = pytest.mark.django_db
 

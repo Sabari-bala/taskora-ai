@@ -22,7 +22,6 @@ from apps.ai.providers.base import AIProvider
 from apps.ai.services import call_ai
 from apps.ai.validation import parse_and_validate
 
-
 pytestmark = pytest.mark.django_db
 
 

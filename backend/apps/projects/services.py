@@ -9,7 +9,7 @@ from .models import Project, Task
 def create_project(*, workspace, name, key, **kwargs):
     key = key.upper().strip()
     if Project.objects.filter(workspace=workspace, key=key).exists():
-        raise ValueError(f'Project key already in use in this workspace.')
+        raise ValueError('Project key already in use in this workspace.')
     return Project.objects.create(
         workspace=workspace, name=name, key=key, **kwargs,
     )

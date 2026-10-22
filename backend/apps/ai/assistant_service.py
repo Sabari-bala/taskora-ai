@@ -1,5 +1,3 @@
-from apps.analytics.services import dashboard_summary
-from apps.projects.models import Task
 from apps.projects.services import project_analytics
 
 from .models import AIInteraction

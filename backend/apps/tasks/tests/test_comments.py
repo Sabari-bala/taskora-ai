@@ -10,7 +10,6 @@ from apps.tasks.models import TaskActivity, TaskComment
 from apps.workspaces.models import WorkspaceMember
 from apps.workspaces.services import add_member, create_workspace
 
-
 pytestmark = pytest.mark.django_db
 
 

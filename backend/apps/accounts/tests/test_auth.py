@@ -5,7 +5,6 @@ from django.urls import reverse
 
 from apps.accounts.models import User
 
-
 pytestmark = pytest.mark.django_db
 
 

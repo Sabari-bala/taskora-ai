@@ -14,8 +14,8 @@ from .assistant_serializers import (
     SummarizeTaskRequestSerializer,
 )
 from .assistant_service import breakdown_task, generate_insights, summarize_task
-from .planner_views import _error_response
 from .exceptions import AIError
+from .planner_views import _error_response
 
 
 def _check_member(user, workspace):

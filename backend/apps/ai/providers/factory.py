@@ -2,6 +2,7 @@
 from django.conf import settings
 
 from ..exceptions import AIProviderError
+from .base import AIProvider
 from .groq import GroqProvider
 
 

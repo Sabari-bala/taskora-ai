@@ -1,16 +1,14 @@
 """Tests for the tasks API."""
-from datetime import date, timedelta
 
 import pytest
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.accounts.models import User
-from apps.projects.models import Label, Project, Task
+from apps.projects.models import Project, Task
 from apps.tasks.models import TaskActivity
 from apps.workspaces.models import WorkspaceMember
 from apps.workspaces.services import add_member, create_workspace
-
 
 pytestmark = pytest.mark.django_db
 

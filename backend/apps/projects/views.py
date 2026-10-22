@@ -82,7 +82,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         try:
             project = create_project(workspace=workspace, **write.validated_data)
         except ValueError as e:
-            raise ValidationError({'key': str(e)})
+            raise ValidationError({'key': str(e)}) from e
         project = self.get_queryset().get(pk=project.pk)
         return Response(
             ProjectDetailSerializer(project).data,
