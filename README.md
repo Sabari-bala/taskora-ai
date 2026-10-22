@@ -2,205 +2,132 @@
 
 > An AI-powered project workspace for modern teams — plan smarter, ship faster.
 
-![Status](https://img.shields.io/badge/status-beta-8B5CF6)
-![Backend](https://img.shields.io/badge/backend-Django%205-092E20?logo=django)
-![Frontend](https://img.shields.io/badge/frontend-React%2018-61DAFB?logo=react)
-![Database](https://img.shields.io/badge/database-PostgreSQL-336791?logo=postgresql)
-![License](https://img.shields.io/badge/license-MIT-blue)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://taskora-ai-delta.vercel.app)
+[![Backend](https://img.shields.io/badge/Backend-Django%205-092E20?style=for-the-badge&logo=django)](https://taskora-api-df40.onrender.com/api/v1/health/)
+[![Frontend](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)](#)
+
+## 🚀 Live Demo
+
+**URL:** [https://taskora-ai-delta.vercel.app](https://taskora-ai-delta.vercel.app)
+
+**Demo Accounts** (Password for all: `StrongPass!2026`):
+- **Owner:** `sabari@taskora.local` (Full access)
+- **Manager:** `priya@taskora.local`
+- **Member:** `rahul@taskora.local`
+- **Viewer:** `sneha@taskora.local` (Read-only access)
+
+*(Note: The backend is hosted on Render's free tier and sleeps after 15 minutes of inactivity. The first request may take 30–50 seconds to wake it up.)*
 
 ---
 
 ## Overview
 
-Taskora AI is a multi-tenant collaboration platform that helps teams plan,
-organise, and track work — with AI embedded directly into the workflow.
+Taskora AI is a multi-tenant project management platform where AI acts as a planning co-pilot. 
 
-Instead of adding a chatbot to the sidebar, AI is used where it actually helps:
-turning a rough idea into a structured project plan, breaking a vague task into
-concrete subtasks, summarising long comment threads, and interpreting real
-project data into plain-language insight.
+Most project tools assume you already know what work needs to be done. Taskora closes that gap: describe a goal in natural language, review the AI's structured proposal of milestones and tasks, approve only what you want, and work inside a real project management system with roles, permissions, and audit trails.
 
-**Core principle:** every AI output is a proposal that a human reviews before
-it reaches the database. An AI bug can never corrupt workspace data.
-
-## The Problem It Solves
-
-Most project tools assume you already know *what* work needs doing. They give
-you a board and let you fill it.
-
-But teams usually start with a **goal**, not a task list — "launch the
-marketing site", "build the mobile app", "prepare the client demo". Turning
-that goal into structured, assignable, trackable work takes time and experience.
-
-Taskora closes that gap. Describe the goal, review the AI's structured
-proposal, then work inside a real project management system.
+**Core Principle:** AI never writes to the database directly. Every AI output is a *proposal* that a human reviews before it is committed. This ensures an AI hallucination can never corrupt workspace data.
 
 ## Features
 
 ### Core
-- Multi-tenant workspaces with role-based access
-  (Owner · Admin · Manager · Member · Viewer)
-- Projects and milestones with leads, dates, and progress
-- Kanban board with drag-and-drop and optimistic updates
-- Rich task detail: comments, activity timeline, labels, estimates
-- Backend-driven search, filtering, and pagination
-- Dashboard with real database analytics
-- In-app notifications
+- **Multi-Tenant Workspaces:** Isolated data per workspace.
+- **Role-Based Access Control:** 5 roles (Owner, Admin, Manager, Member, Viewer) enforced on every API endpoint.
+- **Kanban Board:** Drag-and-drop with optimistic UI updates and automatic rollback on failure.
+- **Task Management:** Subtasks, priorities, labels, assignees, due dates, and activity audit logs.
+- **Milestones:** Track project checkpoints.
+- **Real-time Search:** Chrome-style inline search with keyboard navigation (Cmd/Ctrl+K).
+- **Dark Mode:** Fully theme-aware UI.
+- **Mobile Responsive:** Sidebar collapses, Kanban scrolls, drawers adapt.
 
-### AI (Ember-flagged in the UI)
-- **AI Project Planner** — turn an idea into an editable plan of milestones,
-  epics, and tasks
-- **AI Task Breakdown** — decompose a task into ordered, estimated subtasks
-- **AI Task Summarization** — decisions, blockers, and next actions from a thread
-- **AI Project Insights** — narrative on top of Django-computed statistics
-
-Every AI feature follows the same pattern: AI proposes → human reviews → user
-confirms → standard, permission-checked endpoints persist.
+### AI Features (Powered by Groq)
+- **AI Project Planner:** 3-step flow (Describe → Review → Commit). Generates structured milestones, epics, and tasks.
+- **AI Task Breakdown:** Generates ordered subtasks from a parent task.
+- **AI Task Summarization:** Extracts summary, decisions, blockers, and next actions from comments.
+- **AI Project Insights:** Interprets real database statistics into narrative observations and risks.
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Backend | Django 5.1 + Django REST Framework |
-| Database | PostgreSQL 16 (SQLite for local dev) |
-| Auth | SimpleJWT — access in memory, refresh in HttpOnly cookie |
-| Frontend | React 18 + Vite |
-| Routing | React Router v6 |
-| Server state | TanStack Query |
-| Styling | Tailwind CSS + "Paper & Signal" design tokens |
-| Drag & drop | dnd-kit |
-| AI | Provider abstraction (Groq / Gemini / OpenAI) |
-| Testing | pytest + factory_boy, Vitest + React Testing Library |
-| CI | GitHub Actions |
-| Containers | Docker Compose (dev) |
-
-## Project Structure
-
-```
-taskora-ai/
-├── backend/                 # Django + DRF
-│   ├── config/              # Settings (base/dev/prod/test), URLs, WSGI
-│   ├── apps/                # Domain apps (accounts, workspaces, projects, tasks, …)
-│   ├── common/              # Shared utilities (health, pagination, exceptions)
-│   └── requirements/        # Pinned dependencies by environment
-├── frontend/                # React + Vite
-│   ├── src/
-│   │   ├── app/             # Root, router, providers
-│   │   ├── features/        # Feature-based modules
-│   │   ├── components/ui/   # Design system primitives
-│   │   ├── layouts/         # AppShell, AuthLayout
-│   │   └── lib/             # Axios instance, query client, helpers
-│   └── tailwind.config.js
-├── docs/                    # Architecture, design, and API documentation
-└── .github/workflows/       # CI
-```
-
-## Local Setup
-
-### Prerequisites
-- Python 3.12+
-- Node.js 20+
-- Git
-
-### Backend
-
-```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\Activate.ps1     # Windows
-# source .venv/bin/activate    # macOS / Linux
-pip install -r requirements/dev.txt
-python manage.py migrate
-python manage.py runserver
-```
-
-Backend runs at **http://127.0.0.1:8000**
-Health check: **http://127.0.0.1:8000/api/v1/health/**
-API docs:     **http://127.0.0.1:8000/api/docs/**
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Frontend runs at **http://localhost:5173**
-
-### Environment Variables
-
-Copy `.env.example` to `.env` at the project root and fill in the values.
-The `.env` file is gitignored — never commit real secrets.
-
-## Testing
-
-```bash
-# Backend
-cd backend
-pytest
-
-# Frontend
-cd frontend
-npm run test
-```
-
-Tests cover permissions (role × action matrix), auth flows, task lifecycle,
-AI failure modes, and analytics accuracy.
+| Layer | Technology | Why |
+|---|---|---|
+| **Frontend** | React 18 + Vite | Fast SPA development, no SEO requirements |
+| **Styling** | Tailwind CSS | Custom "Paper & Signal" design system |
+| **State/Data** | TanStack Query | Server state, caching, optimistic updates |
+| **Backend** | Django 5 + DRF | Batteries-included ORM, auth, and migrations |
+| **Database** | PostgreSQL (Neon) | Production-grade relational DB |
+| **Auth** | SimpleJWT | Access in memory (XSS-safe), Refresh in HttpOnly cookie (CSRF-safe) |
+| **AI** | Groq API | Fast LLM inference via provider abstraction |
+| **Deployment**| Render + Vercel | Backend + Frontend hosting |
 
 ## Architecture
 
-The backend follows a **three-layer pattern**:
+### The Three-Layer Backend
+View/ViewSet → Serializer → Service → Model
+↓ ↓
+Validation Business rules
 
-```
-View/ViewSet  →  Serializer  →  Service  →  Model
-                     ↓             ↓
-                 Validation   Business rules
-                              (activity log,
-                               notifications,
-                               permission checks)
-```
+text
+Business logic is isolated in `services.py`. Views stay thin. This makes the system testable without HTTP.
 
-Read queries are isolated in `selectors.py` for `select_related` /
-`prefetch_related` optimisation. Business logic lives in `services.py`, not
-in views or serialisers.
+### AI Safety Pattern
+1. The user requests an AI generation.
+2. The LLM returns a JSON schema-validated proposal.
+3. The frontend renders an editable review modal.
+4. The user selects what they want and hits "Commit".
+5. The backend uses standard, permission-checked service functions to save the data.
 
-Full details in [`docs/architecture/`](docs/architecture/).
+## Local Setup
 
-## Security
+See the [**Handbook**](docs/HANDBOOK.md) for a full walkthrough, role testing matrix, and troubleshooting.
 
-**Implemented:**
-- Argon2 password hashing
-- Refresh token in HttpOnly, Secure, SameSite cookie
-- DRF throttling (anonymous + per-user + scoped AI)
-- Object-level permissions on every viewset
-- CORS allowlist
-- All secrets via environment variables
-- ORM-only queries (no raw SQL string interpolation)
+### Backend
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements/dev.txt
+python manage.py migrate
+python manage.py runserver
+Frontend
+bash
+cd frontend
+npm install
+npm run dev
+Testing
+bash
+# Backend
+cd backend
+pytest
+185 tests passing. Tests cover permissions (role × action matrix), auth flows, task lifecycle, and AI failure modes.
 
-**Known limitations (documented honestly):**
-- No 2FA
-- No refresh-token rotation with reuse detection
-- Rate limits are per-process (Redis needed for multi-instance)
-- No WAF / DDoS protection
+Security Considerations
+Implemented:
 
-## Roadmap
+Argon2 password hashing.
 
-- [x] Phase 1–3 — Architecture, design system, repository setup
-- [x] Phase 4 — Django backend foundation
-- [ ] Phase 5 — Database models
-- [ ] Phase 6 — Authentication
-- [ ] Phase 7–13 — Workspaces, projects, tasks, Kanban, notifications, dashboard
-- [ ] Phase 14–16 — AI foundation, Project Planner, Task Assistant
-- [ ] Phase 17–20 — Testing, security hardening, Docker, deployment
-- [ ] Phase 21–22 — Documentation, interview preparation
+JWT refresh rotation with token blacklist.
 
-## Author
+Object-level permissions on every viewset.
 
-**Sabari Bala M R** — Python Full-Stack Developer
+Multi-tenancy enforced at the query level.
 
-[LinkedIn](https://www.linkedin.com/in/sabari-bala) · [GitHub](https://github.com/Sabari-bala) · [Email](mailto:sabaribala7733@gmail.com)
+CSRF protection on cookie-authenticated endpoints.
 
----
+Rate limiting on AI endpoints.
 
-Licensed under the [MIT License](LICENSE).
+Known Limitations:
+
+No 2FA.
+
+No email verification on signup (only on email change).
+
+Notifications poll every 30 seconds (no WebSockets).
+
+No file attachments.
+
+Author
+Sabari Bala M R — Python Full-Stack Developer
+
+LinkedIn · GitHub · Email
+
+Licensed under the MIT License.
