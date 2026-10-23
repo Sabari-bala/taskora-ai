@@ -1,14 +1,18 @@
+
 # Taskora AI
 
-> An AI-powered project workspace for modern teams — plan smarter, ship faster.
+> AI-assisted project workspace where every AI suggestion needs human approval.
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://taskora-ai-delta.vercel.app)
+[![CI](https://github.com/Sabari-bala/taskora-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Sabari-bala/taskora-ai/actions/workflows/ci.yml)
 [![Backend](https://img.shields.io/badge/Backend-Django%205-092E20?style=for-the-badge&logo=django)](https://taskora-api-df40.onrender.com/api/v1/health/)
-[![Frontend](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)](#)
+[![Frontend](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)](https://taskora-ai-delta.vercel.app)
 
 ## 🚀 Live Demo
 
 **URL:** [https://taskora-ai-delta.vercel.app](https://taskora-ai-delta.vercel.app)
+
+> ⚡ **Note on the Live Demo:** The backend is deployed on Render's free tier. If the app hasn't been visited recently, the initial load may take **20–30 seconds** while the container spins up. Subsequent requests are instant.
 
 **Demo Accounts** (Password for all: `StrongPass!2026`):
 - **Owner:** `sabari@taskora.local` (Full access)
@@ -16,7 +20,7 @@
 - **Member:** `rahul@taskora.local`
 - **Viewer:** `sneha@taskora.local` (Read-only access)
 
-*(Note: The backend is hosted on Render's free tier and sleeps after 15 minutes of inactivity. The first request may take 30–50 seconds to wake it up.)*
+> ⚠️ **Demo Environment Disclaimer:** This is a public demo environment. Data can be edited or deleted by other visitors. Please do not enter real personal information or credentials.
 
 ---
 
@@ -45,6 +49,8 @@ Most project tools assume you already know what work needs to be done. Taskora c
 - **AI Task Breakdown:** Generates ordered subtasks from a parent task.
 - **AI Task Summarization:** Extracts summary, decisions, blockers, and next actions from comments.
 - **AI Project Insights:** Interprets real database statistics into narrative observations and risks.
+
+> **How AI Safety works under the hood:** LLM output is normalized (key-name mapping) and then validated against a strict **JSON Schema** before it reaches the review UI. If the LLM hallucinates a different format, the request is safely rejected without breaking the app.
 
 ## Tech Stack
 
@@ -78,13 +84,16 @@ Business logic is isolated in `services.py`. Views stay thin. This makes the sys
 
 ## Local Setup
 
-See the [**Handbook**](docs/HANDBOOK.md) for a full walkthrough, role testing matrix, and troubleshooting.
-
 ### Backend
 ```bash
 cd backend
 python -m venv .venv
+
+# Windows PowerShell
 .venv\Scripts\Activate.ps1
+# macOS / Linux
+source .venv/bin/activate
+
 pip install -r requirements/dev.txt
 python manage.py migrate
 python manage.py runserver
@@ -98,7 +107,21 @@ bash
 # Backend
 cd backend
 pytest
-185 tests passing. Tests cover permissions (role × action matrix), auth flows, task lifecycle, and AI failure modes.
+200 tests passing (94% coverage). Tests cover the permission matrix (role × action), auth flows, task lifecycle, and AI failure modes.
+
+Roadmap & Known Limitations
+Planned Next:
+
+□ Real-time collaboration (WebSockets) for instant Kanban updates.
+□ Docker Compose for a 1-command local setup.
+□ Email verification on signup (requires SMTP).
+Known Limitations:
+
+No 2FA.
+
+Notifications poll every 30 seconds (no WebSockets).
+
+No file attachments.
 
 Security Considerations
 Implemented:
@@ -114,16 +137,6 @@ Multi-tenancy enforced at the query level.
 CSRF protection on cookie-authenticated endpoints.
 
 Rate limiting on AI endpoints.
-
-Known Limitations:
-
-No 2FA.
-
-No email verification on signup (only on email change).
-
-Notifications poll every 30 seconds (no WebSockets).
-
-No file attachments.
 
 Author
 Sabari Bala M R — Python Full-Stack Developer
