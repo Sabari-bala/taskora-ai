@@ -1,4 +1,4 @@
-# Taskora AI
+﻿# Taskora AI
 
 > AI-assisted project workspace where every AI suggestion needs human approval.
 
@@ -81,11 +81,10 @@ The AI layer sits behind an `AIProvider` interface, so the app is not locked to 
 ## Architecture
 
 ### Three-layer backend
-
-```
 Request -> ViewSet -> Serializer -> Service -> Model
-                      (validation)  (business rules)
-```
+(validation) (business rules)
+
+text
 
 Business logic lives in `services.py`; views stay thin. This keeps the core rules testable without going through HTTP.
 
@@ -111,58 +110,58 @@ pip install -r requirements/dev.txt
 cp .env.example .env        # then fill in values (AI features need a Groq API key)
 python manage.py migrate
 python manage.py runserver
-```
-
 Frontend:
 
-```bash
+bash
 cd frontend
 npm install
 npm run dev
-```
+See the Handbook for a full walkthrough, the role testing matrix and troubleshooting.
 
-See the [Handbook](docs/HANDBOOK.md) for a full walkthrough, the role testing matrix and troubleshooting.
-
-## Testing
-
-```bash
+Testing
+bash
 cd backend
 pytest --cov
-```
+200 tests passing with 94% backend coverage. The suite covers the permission matrix (role x action), auth flows, the task lifecycle and AI failure modes. The GitHub Actions pipeline runs on every push.
 
-**200 tests passing with 94% backend coverage.** The suite covers the permission matrix (role x action), auth flows, the task lifecycle and AI failure modes. The GitHub Actions pipeline runs on every push.
+Security
+Argon2 password hashing
 
-## Security
+JWT refresh rotation with token blacklist on logout
 
-- Argon2 password hashing
-- JWT refresh rotation with token blacklist on logout
-- Object-level permissions on every viewset
-- Multi-tenancy enforced at the query level
-- CSRF protection on cookie-authenticated endpoints
-- Rate limiting on AI endpoints
-- Secrets and API keys supplied through environment variables
+Object-level permissions on every viewset
 
-## Engineering notes
+Multi-tenancy enforced at the query level
 
-- **React StrictMode double-firing:** fixed duplicate requests in the auth and email-verification flows caused by effects running twice in development.
-- **SQLite locking:** resolved "database is locked" errors in development by enabling WAL mode.
-- **Cross-domain deployment:** configured CORS, CSRF and cookie settings so the Vercel frontend and Render API work together.
+CSRF protection on cookie-authenticated endpoints
 
-## Roadmap and known limitations
+Rate limiting on AI endpoints
 
-**Planned**
-- [ ] Real-time collaboration (WebSockets) for instant Kanban updates
-- [ ] Docker Compose for one-command local setup
-- [ ] Email verification on signup (requires SMTP)
+Secrets and API keys supplied through environment variables
 
-**Known limitations**
-- No two-factor authentication
-- Notifications poll every 30 seconds instead of using WebSockets
-- No file attachments
+Engineering notes
+React StrictMode double-firing: fixed duplicate requests in the auth and email-verification flows caused by effects running twice in development.
 
-## Author
+SQLite locking: resolved "database is locked" errors in development by enabling WAL mode.
 
-**Sabari Bala M R**, Python Full Stack Developer
-[LinkedIn](https://linkedin.com/in/sabari-bala) | [GitHub](https://github.com/Sabari-bala) | [Email](mailto:sabaribala7733@gmail.com)
+Cross-domain deployment: configured CORS, CSRF and cookie settings so the Vercel frontend and Render API work together.
+
+Roadmap and known limitations
+Planned
+
+□ Real-time collaboration (WebSockets) for instant Kanban updates
+□ Docker Compose for one-command local setup
+□ Email verification on signup (requires SMTP)
+Known limitations
+
+No two-factor authentication
+
+Notifications poll every 30 seconds instead of using WebSockets
+
+No file attachments
+
+Author
+Sabari Bala M R, Python Full Stack Developer
+LinkedIn | GitHub | Email
 
 Licensed under the MIT License.
