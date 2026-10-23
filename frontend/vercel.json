@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://taskora-api-df40.onrender.com/api/:path*"
+      "source": "/api/(.*)",
+      "destination": "https://taskora-api-df40.onrender.com/api/$1"
     },
     {
       "source": "/(.*)",
