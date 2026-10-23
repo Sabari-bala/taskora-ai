@@ -25,3 +25,9 @@ REFRESH_COOKIE_SECURE = True
 # Ensure DATABASE_URL is set in production
 DATABASES["default"] = env.db("DATABASE_URL")  # noqa: F405
 DATABASES["default"]["CONN_MAX_AGE"] = 600
+
+# Fail closed if production is configured with an unsafe signing key.
+if not SECRET_KEY or SECRET_KEY == "insecure-dev-key-change-me":
+    raise RuntimeError(
+        "DJANGO_SECRET_KEY must be set to a strong, unique production secret."
+    )

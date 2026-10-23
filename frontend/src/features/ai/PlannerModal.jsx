@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, Check, X, Loader2, ArrowLeft, ChevronRight } from 'lucide-react';
+import { Sparkles, Check, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button';
@@ -7,8 +7,6 @@ import { Input } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { usePlanProject, useCommitPlan } from './hooks';
 import { cn } from '../../lib/utils';
-
-const STEPS = ['describe', 'review', 'done'];
 
 export function PlannerModal({ open, onOpenChange, workspaceId }) {
   const navigate = useNavigate();

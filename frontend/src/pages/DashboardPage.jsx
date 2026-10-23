@@ -41,7 +41,7 @@ export default function DashboardPage() {
             Welcome, {firstName}
           </h1>
           <p className="mt-1 text-body-lg text-ink-600">
-            You don't have a workspace yet.
+            You don&apos;t have a workspace yet.
           </p>
         </div>
         <Card className="p-8">

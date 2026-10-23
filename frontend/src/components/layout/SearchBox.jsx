@@ -6,6 +6,8 @@ import { useTasks } from '../../features/tasks/hooks';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { cn } from '../../lib/utils';
 
+const EMPTY_ARRAY = [];
+
 export function SearchBox() {
   const navigate = useNavigate();
   const { current } = useWorkspace();
@@ -19,8 +21,8 @@ export function SearchBox() {
   const containerRef = useRef(null);
   const inputRef = useRef(null);
 
-  const projects = projData?.results || [];
-  const tasks = taskData?.results || [];
+  const projects = projData?.results ?? EMPTY_ARRAY;
+  const tasks = taskData?.results ?? EMPTY_ARRAY;
 
   const filteredTasks = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -133,7 +135,7 @@ export function SearchBox() {
         >
           <div className="max-h-[400px] overflow-y-auto py-1">
             {showEmpty ? (
-              <p className="px-4 py-6 text-center text-body-sm text-ink-500">No results for "{query}"</p>
+              <p className="px-4 py-6 text-center text-body-sm text-ink-500">No results for &quot;{query}&quot;</p>
             ) : (
               <>
                 {filteredTasks.length > 0 && (

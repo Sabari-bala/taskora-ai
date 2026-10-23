@@ -10,7 +10,7 @@ export default function NotFoundPage() {
         </div>
         <p className="text-overline text-ink-500 mb-2">ERROR 404</p>
         <h1 className="text-h1 font-semibold text-ink-900">
-          This page doesn't exist
+          This page doesn&apos;t exist
         </h1>
         <p className="mt-3 text-body-lg text-ink-600">
           The link may be broken, or the page may have been moved.

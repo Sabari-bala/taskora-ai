@@ -32,3 +32,7 @@ Skeleton.KanbanColumn = ({ className, ...props }) => (
     <div className="skeleton h-20 w-full rounded-md" />
   </div>
 );
+
+Skeleton.Text.displayName = 'Skeleton.Text';
+Skeleton.Card.displayName = 'Skeleton.Card';
+Skeleton.KanbanColumn.displayName = 'Skeleton.KanbanColumn';

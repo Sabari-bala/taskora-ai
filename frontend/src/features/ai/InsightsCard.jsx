@@ -25,7 +25,7 @@ export function InsightsCard({ projectId }) {
         <div className="flex items-center gap-2">
           <Sparkles size={14} className="text-ember-500" />
           <p className="text-body-sm text-ink-700">
-            Get an AI read on this project's progress, risks, and priorities.
+            Get an AI read on this project&apos;s progress, risks, and priorities.
           </p>
         </div>
         <Button variant="ai" size="sm" leadingIcon={Sparkles} onClick={generate}>

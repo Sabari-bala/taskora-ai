@@ -31,7 +31,6 @@ import {
   TASK_STATUSES,
   TASK_PRIORITIES,
 } from '../../lib/constants';
-import { formatDate } from '../../lib/utils';
 
 export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
   const { user } = useAuth();
@@ -54,12 +53,15 @@ export function TaskDetailDrawer({ taskId, open, onOpenChange }) {
   const [breakdownOpen, setBreakdownOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  const taskTitle = task?.title;
+  const taskDescription = task?.description;
+
   useEffect(() => {
-    if (task) {
-      setTitleDraft(task.title);
-      setDescDraft(task.description || '');
+    if (task?.id != null) {
+      setTitleDraft(taskTitle);
+      setDescDraft(taskDescription || '');
     }
-  }, [task?.id]);
+  }, [task?.id, taskTitle, taskDescription]);
 
   const comments = commentsPage?.results || [];
   const subtasks = subtasksPage?.results || [];

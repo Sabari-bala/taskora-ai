@@ -16,7 +16,6 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { useToast } from '../../components/ui/Toast';
 import { DeleteConfirmModal } from '../../components/ui/DeleteConfirmModal';
 import { WORKSPACE_ROLES } from '../../lib/constants';
-import { cn } from '../../lib/utils';
 
 export default function MembersPage() {
   const { current } = useWorkspace();

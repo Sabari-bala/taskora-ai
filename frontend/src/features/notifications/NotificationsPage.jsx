@@ -1,5 +1,4 @@
 import { Bell, CheckCheck, Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Skeleton } from '../../components/ui/Skeleton';

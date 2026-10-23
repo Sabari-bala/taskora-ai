@@ -4,10 +4,11 @@ import { useWorkspaces } from '../features/workspaces/hooks';
 export const WorkspaceContext = createContext(null);
 
 const STORAGE_KEY = 'taskora.selected_workspace';
+const EMPTY_ARRAY = [];
 
 export function WorkspaceProvider({ children }) {
   const { data, isLoading } = useWorkspaces();
-  const workspaces = data?.results || [];
+  const workspaces = data?.results ?? EMPTY_ARRAY;
 
   const [selectedId, setSelectedId] = useState(() =>
     localStorage.getItem(STORAGE_KEY)
