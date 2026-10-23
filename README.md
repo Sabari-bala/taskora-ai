@@ -210,11 +210,17 @@ GitHub Actions runs automated checks through the configured CI workflow.
 - Secrets and API keys supplied through environment variables.
 - AI-generated proposals validated before users can commit them.
 
+## Deployment
+
+- **Frontend:** Vercel. `frontend/vercel.json` proxies `/api/*` to the Render API and rewrites all other paths to `index.html`.
+- **Backend:** Render (Gunicorn, Whitenoise), PostgreSQL on Neon.
+- **Production env:** `VITE_API_URL=/api/v1` on Vercel; the backend requires `DJANGO_ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS` and `CSRF_TRUSTED_ORIGINS` set to the Vercel domain.
+
 ## Engineering Notes
 
 - **React StrictMode:** Fixed duplicate requests in authentication and email-verification flows caused by effects running twice during development.
 - **SQLite locking:** Addressed database-locking issues during development by enabling WAL mode.
-- **Cross-domain deployment:** Configured CORS, CSRF, and cookie settings to support communication between the Vercel frontend and Render backend.
+- **Cross-domain authentication:** Browsers block third-party cookies between Vercel and Render, which logged users out on refresh. Fixed by proxying `/api` through Vercel rewrites so the HttpOnly refresh cookie is first-party, and added a catch-all rewrite so deep links survive a refresh.
 - **AI output validation:** Added normalization and schema validation to handle inconsistent model responses safely.
 
 These issues provided practical experience debugging application behavior across development and production environments.
