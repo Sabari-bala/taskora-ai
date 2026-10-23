@@ -1,167 +1,243 @@
 ﻿# Taskora AI
 
-> AI-assisted project workspace where every AI suggestion needs human approval.
+> AI-assisted project workspace where every AI suggestion requires human approval.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://taskora-ai-delta.vercel.app)
-[![CI](https://github.com/Sabari-bala/taskora-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Sabari-bala/taskora-ai/actions)
-[![Backend](https://img.shields.io/badge/Backend-Django%205-092E20?style=for-the-badge&logo=django)](https://taskora-api-df40.onrender.com/api/v1/health/)
-[![Frontend](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)](https://taskora-ai-delta.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://taskora-ai-delta.vercel.app) [![CI](https://github.com/Sabari-bala/taskora-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Sabari-bala/taskora-ai/actions) [![Backend](https://img.shields.io/badge/Backend-Django%205-092E20?style=for-the-badge&logo=django)](https://taskora-api-df40.onrender.com/api/v1/health/) [![Frontend](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)](https://taskora-ai-delta.vercel.app)
 
-<!-- Add screenshots here: Kanban board, AI planner review modal, Viewer (read-only) view -->
+<!-- Add screenshots here: Kanban board, AI planner review modal, and Viewer (read-only) view. -->
 
 ## Live Demo
 
-**URL:** https://taskora-ai-delta.vercel.app
+**Application:** https://taskora-ai-delta.vercel.app
 
-> **Cold start:** The backend runs on Render's free tier. If the app has not been visited recently, the first load can take 20-30 seconds while the server wakes up. After that, requests are fast.
+> **Cold start:** The backend runs on Render's free tier. If the application has not been visited recently, the first request may take 20–30 seconds while the server wakes up.
 
-**Demo accounts** (password for all: `StrongPass!2026`):
+### Demo Accounts
+
+The following accounts share the same demo password: `StrongPass!2026`.
 
 | Role | Email | Access |
 |---|---|---|
 | Owner | `sabari@taskora.local` | Full access |
 | Manager | `priya@taskora.local` | Manage projects and tasks |
 | Member | `rahul@taskora.local` | Work on assigned tasks |
-| Viewer | `sneha@taskora.local` | Read-only |
+| Viewer | `sneha@taskora.local` | Read-only access |
 
-> **Public demo:** Data can be edited or deleted by other visitors. Please do not enter real personal information or credentials.
+> **Public demo:** Other visitors may edit or delete demo data. Do not enter real personal information or credentials.
 
 ## Overview
 
 Taskora AI is a multi-tenant project management platform where AI acts as a planning co-pilot, not a chatbot.
 
-Most project tools assume you already know what work needs to be done. Taskora closes that gap: describe a goal in plain language, review the AI's structured proposal of milestones and tasks, approve only what you want, and then work inside a real project system with roles, permissions and audit trails.
+Most project management tools assume users already know what work needs to be done. Taskora addresses this problem by allowing users to describe a goal in plain language, review an AI-generated proposal of milestones and tasks, approve the items they want, and execute the plan inside a project workspace with roles, permissions, and audit trails.
 
-**Core principle: AI proposes, humans approve.** AI output is never written to the database directly. Every proposal is validated, shown in an editable review step, and saved only after a user commits it through the same permission-checked service functions as any manual action.
+**Core principle: AI proposes, humans approve.**
+
+AI output is never written directly to the database. Every proposal is normalized, validated, presented through an editable review step, and saved only after the user explicitly commits it through the same permission-checked service functions used by manual actions.
 
 ## Features
 
-### Core
-- **Multi-tenant workspaces:** Data is isolated per workspace.
-- **Role-based access control:** Five roles (Owner, Admin, Manager, Member, Viewer) enforced on every API endpoint.
-- **Kanban board:** Drag-and-drop with optimistic UI updates and automatic rollback if the API call fails.
-- **Task management:** Subtasks, priorities, labels, assignees, due dates, and an immutable activity audit log.
+### Core Project Management
+
+- **Multi-tenant workspaces:** Workspace data is isolated.
+- **Role-based access control:** Five roles—Owner, Admin, Manager, Member, and Viewer—with permissions enforced by the backend.
+- **Kanban board:** Drag-and-drop task management with optimistic UI updates and automatic rollback when API requests fail.
+- **Task management:** Subtasks, priorities, labels, assignees, due dates, and an activity audit log.
 - **Milestones:** Track project checkpoints.
-- **Command palette search:** Inline search with keyboard navigation (Cmd/Ctrl+K).
-- **Dark mode and mobile layout:** Theme-aware UI, collapsible sidebar, scrollable board, full-screen drawers on small screens.
+- **Command palette:** Search with keyboard navigation using `Ctrl+K` or `Cmd+K`.
+- **Dark mode and responsive layouts:** Theme-aware UI, collapsible sidebar, scrollable Kanban board, and full-screen drawers on smaller screens.
 
-### AI features (Groq, LLaMA models)
-- **AI Project Planner:** Three-step flow (Describe, Review, Commit) that generates milestones, epics and tasks.
+### AI Features
+
+Powered by the Groq API and LLaMA models.
+
+- **AI Project Planner:** A three-step workflow—Describe, Review, Commit—that generates milestones, epics, and tasks.
 - **AI Task Breakdown:** Generates ordered subtasks from a parent task.
-- **AI Task Summarization:** Extracts summary, decisions, blockers and next actions from comments.
-- **AI Project Insights:** Django calculates real database statistics; the LLM only writes the narrative on top of them.
+- **AI Task Summarization:** Extracts summaries, decisions, blockers, and next actions from comments.
+- **AI Project Insights:** Django calculates statistics from actual database records; the language model generates the explanatory narrative.
 
-## How AI safety works
+## How AI Safety Works
 
-1. The user requests an AI generation.
-2. The provider returns raw LLM output.
-3. A **normalizer** maps variable key names to the expected schema (for example `name` to `title`).
-4. The result is validated against a strict **JSON Schema**. If the format is wrong, the request is rejected safely and the app keeps working.
-5. The frontend shows an editable review modal.
-6. The user selects what they want and clicks **Commit**.
-7. The backend saves it through standard, permission-checked service functions.
+1. The user requests AI-generated content.
+2. The AI provider returns the model output.
+3. A normalizer maps variable field names to the application's expected schema.
+4. The result is validated against a strict JSON Schema. Invalid output is rejected safely.
+5. The frontend displays the proposal in an editable review interface.
+6. The user selects the desired items and explicitly clicks **Commit**.
+7. The backend saves the approved changes through standard, permission-checked service functions.
 
-The AI layer sits behind an `AIProvider` interface, so the app is not locked to one vendor (Groq is the current provider).
+The AI layer uses an `AIProvider` interface, allowing providers to be changed without coupling the application to a single vendor. Groq is the current provider.
 
-## Tech stack
+## Tech Stack
 
-| Layer | Technology | Why |
+| Layer | Technology | Purpose |
 |---|---|---|
-| Frontend | React 18, Vite, React Router | Fast SPA development; no SEO requirements for an authenticated app |
-| UI | Tailwind CSS, Radix UI, dnd-kit | Custom "Paper & Signal" design system, accessible primitives, drag-and-drop |
-| Server state | TanStack Query | Caching and optimistic updates |
-| Backend | Python 3.13, Django 5, Django REST Framework | ORM, migrations and a mature API toolkit |
-| Database | PostgreSQL (Neon) in production, SQLite in development | Relational data model with constraints |
-| Auth | SimpleJWT | Access token in memory (XSS-safe), refresh token in an HttpOnly cookie |
-| AI | Groq API with JSON Schema validation | Fast inference behind a provider abstraction |
-| Testing | Pytest, Factory Boy | Role-by-action permission tests and AI failure modes |
-| Tooling | GitHub Actions, pre-commit (Ruff, Black, Prettier) | Consistent style and automated checks |
-| Hosting | Render (API), Vercel (frontend) | Separate deployments with cross-domain CORS/CSRF configuration |
+| Frontend | React 18, Vite, React Router | Component-based single-page application |
+| UI | Tailwind CSS, Radix UI, dnd-kit | Styling, accessible UI primitives, and drag-and-drop |
+| Server state | TanStack Query | Data fetching, caching, and optimistic updates |
+| Backend | Python 3.13, Django 5, Django REST Framework | API development, business logic, and ORM |
+| Database | PostgreSQL (Neon), SQLite for development | Relational persistence |
+| Authentication | SimpleJWT | JWT authentication with refresh-token handling |
+| AI | Groq API, JSON Schema validation | AI generation behind a provider abstraction |
+| Testing | Pytest, Factory Boy | Automated tests for permissions, workflows, and AI failure modes |
+| Code quality | GitHub Actions, pre-commit, Ruff, Black, Prettier | Automated checks and consistent formatting |
+| Hosting | Render, Vercel | Separate backend and frontend deployments |
 
 ## Architecture
 
-### Three-layer backend
-Request -> ViewSet -> Serializer -> Service -> Model
-(validation) (business rules)
+### Backend Request Flow
 
-text
+```text
+Client Request
+      |
+      v
+   ViewSet
+      |
+      v
+  Serializer
+ (validation)
+      |
+      v
+   Service
+ (business rules)
+      |
+      v
+    Model
+      |
+      v
+  PostgreSQL
+```
 
-Business logic lives in `services.py`; views stay thin. This keeps the core rules testable without going through HTTP.
+Business logic lives in `services.py`, keeping views thin and making core rules easier to test independently of HTTP requests.
 
-### Data model highlights
-- Custom `User` model with UUID primary keys and email-based login.
-- Workspaces, Projects, Tasks, Milestones and Comments.
-- An immutable `TaskActivity` log written automatically when tasks change (including Kanban reorders, which run in atomic database updates).
+### Data Model Highlights
 
-## Local setup
+- **User:** Custom user model with UUID primary keys and email-based login.
+- **Workspace:** Organizes users and workspace-level access.
+- **Project:** Represents a project within a workspace.
+- **Task:** Stores task details, assignments, priorities, and workflow status.
+- **Milestone:** Represents project checkpoints.
+- **Comment:** Stores task-related discussion.
+- **TaskActivity:** Records task activity, including changes and Kanban reordering.
 
-Backend:
+## Local Setup
+
+### Prerequisites
+
+- Python 3.13, or the version supported by the project.
+- Node.js and npm.
+- Git.
+- A Groq API key for AI features.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Sabari-bala/taskora-ai.git
+cd taskora-ai
+```
+
+### 2. Set Up the Backend
+
+From the repository root, create and activate a virtual environment.
+
+**Windows PowerShell:**
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements/dev.txt
+Copy-Item .env.example .env
+```
+
+**macOS/Linux:**
 
 ```bash
 cd backend
 python -m venv .venv
-
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-# macOS / Linux
 source .venv/bin/activate
-
 pip install -r requirements/dev.txt
-cp .env.example .env        # then fill in values (AI features need a Groq API key)
+cp .env.example .env
+```
+
+Configure the environment variables required by the backend, including the database settings, Django secret key, and Groq API key where applicable.
+
+Run migrations and start the development server:
+
+```bash
 python manage.py migrate
 python manage.py runserver
-Frontend:
+```
 
-bash
+The backend is available at `http://127.0.0.1:8000`.
+
+### 3. Set Up the Frontend
+
+Open a second terminal from the repository root:
+
+```bash
 cd frontend
 npm install
 npm run dev
-See the Handbook for a full walkthrough, the role testing matrix and troubleshooting.
+```
 
-Testing
-bash
-cd backend
+Open the local URL printed by Vite, typically `http://localhost:5173`.
+
+> **Note:** Confirm the environment-variable names and required values against the project's `.env.example` files and frontend configuration. Never commit real secrets or API keys.
+
+## Testing
+
+Run the backend test suite from the `backend` directory with the virtual environment activated:
+
+```bash
 pytest --cov
-200 tests passing with 94% backend coverage. The suite covers the permission matrix (role x action), auth flows, the task lifecycle and AI failure modes. The GitHub Actions pipeline runs on every push.
+```
 
-Security
-Argon2 password hashing
+The project test suite covers role-based permissions, authentication flows, task lifecycle operations, and AI failure modes.
 
-JWT refresh rotation with token blacklist on logout
+**Reported test status:** 200 tests passing with 94% backend coverage.
 
-Object-level permissions on every viewset
+GitHub Actions runs automated checks through the configured CI workflow.
 
-Multi-tenancy enforced at the query level
+## Security
 
-CSRF protection on cookie-authenticated endpoints
+- Argon2 password hashing.
+- JWT refresh-token rotation and token blacklisting on logout.
+- Object-level permissions on API viewsets.
+- Workspace-level data isolation enforced through querysets.
+- CSRF protection for cookie-authenticated endpoints.
+- Rate limiting on AI endpoints.
+- Secrets and API keys supplied through environment variables.
+- AI-generated proposals validated before users can commit them.
 
-Rate limiting on AI endpoints
+## Engineering Notes
 
-Secrets and API keys supplied through environment variables
+- **React StrictMode:** Fixed duplicate requests in authentication and email-verification flows caused by effects running twice during development.
+- **SQLite locking:** Addressed database-locking issues during development by enabling WAL mode.
+- **Cross-domain deployment:** Configured CORS, CSRF, and cookie settings to support communication between the Vercel frontend and Render backend.
+- **AI output validation:** Added normalization and schema validation to handle inconsistent model responses safely.
 
-Engineering notes
-React StrictMode double-firing: fixed duplicate requests in the auth and email-verification flows caused by effects running twice in development.
+These issues provided practical experience debugging application behavior across development and production environments.
 
-SQLite locking: resolved "database is locked" errors in development by enabling WAL mode.
+## Roadmap and Known Limitations
 
-Cross-domain deployment: configured CORS, CSRF and cookie settings so the Vercel frontend and Render API work together.
+### Planned
 
-Roadmap and known limitations
-Planned
+- [ ] Real-time collaboration using WebSockets for instant Kanban updates.
+- [ ] Docker Compose for one-command local setup.
+- [ ] Email verification on signup, requiring SMTP configuration.
 
-□ Real-time collaboration (WebSockets) for instant Kanban updates
-□ Docker Compose for one-command local setup
-□ Email verification on signup (requires SMTP)
-Known limitations
+### Known Limitations
 
-No two-factor authentication
+- Two-factor authentication is not implemented.
+- Notifications poll every 30 seconds rather than using WebSockets.
+- File attachments are not supported.
 
-Notifications poll every 30 seconds instead of using WebSockets
+## Author
 
-No file attachments
+**Sabari Bala M R** — Python Full Stack Developer
 
-Author
-Sabari Bala M R, Python Full Stack Developer
-LinkedIn | GitHub | Email
+- [LinkedIn](https://linkedin.com/in/sabari-bala)
+- [GitHub](https://github.com/Sabari-bala)
 
-Licensed under the MIT License.
+Licensed under the MIT License. See [LICENSE](LICENSE) for details.
