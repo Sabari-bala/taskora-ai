@@ -1,49 +1,75 @@
-﻿# Taskora AI
+# Taskora AI
+
+> AI-assisted project workspace where every AI suggestion needs human approval.
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://taskora-ai-delta.vercel.app)
+[![CI](https://github.com/Sabari-bala/taskora-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Sabari-bala/taskora-ai/actions)
+[![Backend](https://img.shields.io/badge/Backend-Django%205-092E20?style=for-the-badge&logo=django)](https://taskora-api-df40.onrender.com/api/v1/health/)
+[![Frontend](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)](https://taskora-ai-delta.vercel.app)
+
+<!-- Add screenshots here: Kanban board, AI planner review modal, Viewer (read-only) view -->
 
 **An AI-assisted project management platform where AI proposes and humans approve.**
 
 Taskora AI is a full-stack, multi-tenant project workspace built with Django REST Framework and React. Teams can organize projects, manage tasks through a Kanban board, collaborate through comments and activity logs, and use AI-assisted workflows to turn goals into actionable plans.
 
-AI is integrated into the product workflow—not added as a standalone chatbot. Generated plans and task suggestions remain proposals until a user reviews and confirms them.
+AI is part of the product workflow, not a standalone chatbot. Generated plans and task suggestions remain proposals until a user reviews and confirms them.
 
 ## Live Demo
 
-- **Frontend:** https://taskora-ai-delta.vercel.app
+- **Application:** https://taskora-ai-delta.vercel.app
 - **Backend health check:** https://taskora-api-df40.onrender.com/api/v1/health/
-- **Source code:** https://github.com/Sabari-bala/taskora-ai
 - **User handbook:** [docs/HANDBOOK.md](docs/HANDBOOK.md)
 
-> The public demo is intended for evaluation. Demo data may be modified by other visitors. Do not enter personal or confidential information.
+> **Cold start:** The backend runs on Render's free tier. If the app has not been visited recently, the first request may take 20-30 seconds while the server wakes up.
+
+### Demo accounts
+
+Password for all accounts: `StrongPass!2026`
+
+| Account | Role |
+|---|---|
+| `sabari@taskora.local` | Owner |
+| `priya@taskora.local` | Manager |
+| `rahul@taskora.local` | Member |
+| `arjun@taskora.local` | Member |
+| `sneha@taskora.local` | Viewer (read-only) |
+
+> **Public demo:** Other visitors can edit or delete demo data. Do not enter personal or confidential information.
 
 ## Key Features
 
 ### Project and task management
-- Create and manage projects, milestones, tasks, and subtasks.
-- Organize tasks across five workflow statuses: Backlog, To Do, In Progress, Review, and Done.
-- Set priorities, assignees, due dates, estimates, and labels.
+
+- Create and manage projects, milestones, tasks and subtasks.
+- Organize tasks across five workflow statuses: Backlog, To Do, In Progress, Review and Done.
+- Set priorities, assignees, due dates, estimates and labels.
 - Add task comments and inspect task activity history.
-- Use drag-and-drop Kanban boards with optimistic updates and rollback on failure.
-- Search, filter, paginate, and view dashboard summaries.
+- Drag-and-drop Kanban board with optimistic updates and rollback on failure.
+- Search, filter, paginate and view dashboard summaries.
 
 ### Workspaces and permissions
+
 - Workspace-scoped data and membership.
-- Five roles: Owner, Admin, Manager, Member, and Viewer.
+- Five roles: Owner, Admin, Manager, Member and Viewer.
 - Role-aware access and object-level permission checks on protected operations.
 - Member management and workspace switching.
 - Read-only access for Viewers.
 
 ### AI-assisted workflows
-- **AI Project Planner:** turn a project description into a structured proposal with milestones and tasks.
+
+- **AI Project Planner:** turn a project description into a structured proposal of milestones and tasks (Describe, Review, Commit).
 - **AI Task Breakdown:** propose subtasks for an existing task.
-- **AI Task Summarization:** summarize task context, decisions, blockers, and next actions.
+- **AI Task Summarization:** summarize task context, decisions, blockers and next actions.
 - **AI Project Insights:** interpret calculated project statistics and surface risks or recommendations.
 
 ### User experience
+
 - Responsive layouts for desktop and mobile.
 - Light and dark themes.
-- Searchable application navigation and keyboard shortcuts.
+- Command palette search and keyboard shortcuts (`Ctrl+K` / `Cmd+K`).
 - Notifications and unread indicators.
-- Reusable UI components and loading, empty, and error states.
+- Loading, empty and error states throughout.
 
 ## Technology Stack
 
@@ -54,75 +80,86 @@ AI is integrated into the product workflow—not added as a standalone chatbot. 
 | Styling and UI | Tailwind CSS, Radix UI, Lucide React |
 | Client data | TanStack Query, Axios |
 | Kanban | dnd-kit |
-| Database | PostgreSQL in production, SQLite for development |
+| Database | PostgreSQL (Neon) in production, SQLite for development |
 | Authentication | SimpleJWT, refresh-token rotation and blacklist |
 | AI integration | Groq API, `httpx`, JSON Schema validation |
 | API documentation | drf-spectacular |
 | Testing | pytest, pytest-django, Factory Boy |
-| Code quality | Ruff, Black, ESLint, Prettier, pre-commit |
-| Deployment | Render for the backend, Vercel for the frontend |
+| Code quality | Ruff, Black, ESLint, Prettier, pre-commit, GitHub Actions |
+| Deployment | Render (backend), Vercel (frontend) |
 
 ## Architecture and Engineering Decisions
 
 ### Backend structure
 
-The backend follows a domain-oriented Django architecture. Views handle HTTP concerns, serializers validate and represent data, service functions own business operations, and selectors organize read queries where applicable.
+```text
+Request -> ViewSet -> Serializer -> Service -> Model -> PostgreSQL
+                      (validation)  (business rules)
+```
 
-This separation keeps business logic testable and reduces the amount of logic inside views.
+The backend follows a domain-oriented Django architecture. Views handle HTTP concerns, serializers validate and represent data, and service functions own business operations. This keeps business logic testable without going through HTTP.
 
 ### Multi-tenant authorization
 
-Workspace membership defines the access boundary. Protected operations check both the requested resource and the user's permissions; the frontend is not treated as the security boundary.
+Workspace membership defines the access boundary. Protected operations check both the requested resource and the user's permissions; the frontend is never treated as the security boundary.
 
 ### Human-reviewed AI
 
-AI-generated content is not written directly to the database by the model.
+AI-generated content is never written to the database directly by the model.
 
 1. The user submits a request.
 2. The backend calls the configured AI provider.
-3. The response is normalized and validated against a JSON Schema.
-4. The user reviews and selects the proposed content.
-5. Approved changes are persisted through normal, permission-checked application operations.
-
-This design keeps the AI layer separate from the application's authorization and persistence rules.
+3. The response is normalized (variable key names mapped to the expected schema) and validated against a JSON Schema. Invalid output is rejected safely.
+4. The user reviews and selects the proposed content in an editable review step.
+5. Approved changes are saved through the same permission-checked service functions used by manual actions.
 
 ### Provider abstraction
 
-Taskora AI uses the **Groq API**, currently configured with the `openai/gpt-oss-120b` model. Provider configuration is abstracted so the integration can be changed without redesigning the product's workflows.
-
-AI requests also have timeout, retry, rate-limit, error-handling, and interaction-logging safeguards.
+Taskora AI uses the **Groq API**, currently configured with the `openai/gpt-oss-120b` model. Providers sit behind an `AIProvider` interface so the integration can change without redesigning the product's workflows. AI requests have timeout, retry, rate-limit and error-handling safeguards.
 
 ### Frontend state management
 
-- TanStack Query manages server state and request caching.
+- TanStack Query manages server state and caching.
 - Authentication and theme contexts handle shared application state.
-- Local component state handles temporary UI interactions.
-- URL search parameters can represent navigable filters and pagination state.
+- URL search parameters represent filters and pagination.
 
 ## Security
 
-Implemented safeguards include:
-
-- Password hashing with Argon2.
-- JWT authentication with refresh-token rotation and token blacklisting on logout.
-- Access tokens held in memory rather than browser local storage.
+- Argon2 password hashing.
+- JWT authentication with refresh-token rotation and blacklisting on logout.
+- Access tokens held in memory, not in browser local storage.
 - Refresh tokens stored in an HttpOnly cookie.
 - CSRF protection for cookie-authenticated endpoints.
 - Workspace-scoped queries and object-level authorization.
-- Rate limiting and structured validation for AI endpoints.
+- Rate limiting and structured validation on AI endpoints.
 - Environment-based configuration for secrets and deployment settings.
 
-Security controls depend on correct production configuration. Never commit real secrets, API keys, database credentials, or private environment files.
+Never commit real secrets, API keys or database credentials.
+
+## Deployment
+
+- **Frontend:** Vercel. `frontend/vercel.json` proxies `/api/*` to the Render API and rewrites all other paths to `index.html`.
+- **Backend:** Render (Gunicorn, Whitenoise), PostgreSQL on Neon.
+- **Production environment:** `VITE_API_URL=/api/v1` on Vercel. The backend needs `DJANGO_ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS` and `CSRF_TRUSTED_ORIGINS` set to the Vercel domain.
+
+## Engineering Notes
+
+- **Cross-domain authentication:** Browsers block third-party cookies between Vercel and Render, which logged users out on refresh. Fixed by proxying `/api` through Vercel rewrites so the HttpOnly refresh cookie is first-party. Verified in Chrome Incognito.
+- **SPA deep links:** Refreshing on a client-side route returned a Vercel 404. Fixed with a catch-all rewrite to `index.html`.
+- **React StrictMode:** Fixed duplicate requests in the authentication and email-verification flows caused by effects running twice in development.
+- **SQLite locking:** Resolved database-locking errors in development by enabling WAL mode.
+- **AI output validation:** Added normalization and schema validation to handle inconsistent model responses safely.
 
 ## Testing and Quality
 
-The project's automated backend tests cover areas including authentication, permissions, business rules, task workflows, and AI failure scenarios.
+```bash
+cd backend
+pytest --cov
+```
 
-**Latest reported backend status:** 200 tests passing, with 94% test coverage.
+**200 tests passing with 94% backend coverage.** The suite covers authentication flows (rotation, refresh, blacklist), the role-by-action permission matrix, task workflows including Kanban reordering and activity logging, and AI failure modes (timeouts, malformed JSON).
 
-These are reported project test results, not a guarantee that every production scenario is covered. Run the current test suite before relying on these figures after code changes.
-
-GitHub Actions is used for continuous integration, alongside formatting and linting tools.
+GitHub Actions runs backend tests and Ruff, plus frontend linting and a production build, on pushes to `main` and pull requests targeting `main`.
 
 ## Local Development
 
@@ -131,91 +168,76 @@ GitHub Actions is used for continuous integration, alongside formatting and lint
 - Python 3.13
 - Node.js and npm
 - Git
-- A Groq API key for testing AI features
+- A Groq API key (for AI features)
 
 ### 1. Clone the repository
 
-```powershell
+```bash
 git clone https://github.com/Sabari-bala/taskora-ai.git
 cd taskora-ai
 ```
 
-### 2. Configure and run the backend
+### 2. Backend
 
-Run these commands from the repository root in PowerShell:
+Django loads its environment from the repository-root `.env` file. Create that file from the backend example before starting the server.
+
+**Windows (PowerShell), from the repository root:**
 
 ```powershell
+Copy-Item backend/.env.example .env
 cd backend
 py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements/dev.txt
-Copy-Item .env.example .env
 ```
 
-Edit `backend/.env` and provide the required local settings, including a Django secret key and your Groq API key if you want to use AI features. Configure the database variables according to the project's settings.
+**macOS / Linux, from the repository root:**
+
+```bash
+cp backend/.env.example .env
+cd backend
+python3.13 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements/dev.txt
+```
+
+Edit the repository-root `.env` file and set a secure local Django secret key and your Groq API key if you want to use AI features. The example leaves `DATABASE_URL` unset so development uses SQLite by default. If you prefer PostgreSQL locally, configure `DATABASE_URL` for your local database.
 
 Then run migrations and start Django:
 
-```powershell
+```bash
 python manage.py migrate
 python manage.py runserver
 ```
 
-The backend should be available at `http://127.0.0.1:8000`.
+The backend runs at `http://127.0.0.1:8000`.
 
-### 3. Configure and run the frontend
+### 3. Frontend
 
-Open a **second terminal** at the repository root:
+In a second terminal from the repository root:
 
-```powershell
+```bash
 cd frontend
 npm install
-Copy-Item .env.example .env
-```
-
-Set the API base URL in `frontend/.env`:
-
-- **Local development:** `VITE_API_URL=http://localhost:8000/api/v1`
-- **Production:** `VITE_API_URL=/api/v1`, with the Vercel API proxy configured for the deployed application.
-
-The production setting relies on the deployed proxy configuration. The local setting connects directly to the Django development server.
-
-Start Vite:
-
-```powershell
+cp .env.example .env        # PowerShell: Copy-Item .env.example .env
 npm run dev
 ```
 
-Open the local URL printed by Vite in the terminal.
+Set the API URL in `frontend/.env`:
 
-> If PowerShell reports that the destination `.env` file already exists, review it before replacing it. Keep real credentials in local environment files, never in `.env.example`.
+- **Local development:** `VITE_API_URL=http://localhost:8000/api/v1`
+- **Production:** `VITE_API_URL=/api/v1` (relies on the Vercel proxy described above)
 
-## Demo Accounts
-
-The seeded demonstration workspace includes accounts representing different permission levels:
-
-| Account | Role |
-|---|---|
-| `sabari@taskora.local` | Owner |
-| `priya@taskora.local` | Manager |
-| `rahul@taskora.local` | Member |
-| `arjun@taskora.local` | Member |
-| `sneha@taskora.local` | Viewer |
-
-The documented demo password is `StrongPass!2026`. Use these credentials only if they remain enabled on the live demo; deployments may reset or change demo data.
+Open the local URL printed by Vite.
 
 ## Known Limitations
 
-Taskora AI focuses on project and task workflows rather than being a complete enterprise suite. Current documented limitations include:
-
-- No billing or subscription system.
-- No signup email verification or password-reset email workflow.
-- No file attachments.
-- Notifications poll periodically rather than using WebSockets.
-- No real-time collaborative editing.
 - No two-factor authentication.
-- No custom workflow builder, time tracking, or native mobile application.
+- No signup email verification or password-reset emails.
+- No file attachments.
+- Notifications poll periodically instead of using WebSockets.
 
 ## Project Structure
 
@@ -234,12 +256,12 @@ taskora-ai/
 │   │   ├── hooks/
 │   │   └── lib/
 │   ├── package.json
+│   ├── vercel.json
 │   └── vite.config.js
 ├── docs/
 │   └── HANDBOOK.md
-├── .github/
-│   └── workflows/
-├── .gitignore
+├── .github/workflows/
+├── CONTRIBUTING.md
 ├── LICENSE
 └── README.md
 ```
@@ -248,13 +270,17 @@ taskora-ai/
 
 - Building a full-stack application with Django REST APIs and React.
 - Modeling relational data and enforcing workspace-level permissions.
-- Designing reusable services and maintainable application boundaries.
-- Managing client-side server state and asynchronous UI updates.
-- Integrating a third-party LLM through Groq with structured-output validation.
+- Designing a service layer with maintainable application boundaries.
+- Managing server state and optimistic UI updates on the client.
+- Integrating an LLM through Groq with structured-output validation.
 - Keeping AI proposals separate from authorized database writes.
-- Testing authentication, permissions, business rules, and failure paths.
-- Configuring separate frontend and backend deployments.
+- Testing authentication, permissions, business rules and failure paths.
+- Diagnosing and fixing production issues (third-party cookies, SPA routing, cross-domain configuration).
 
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+**Author:** Sabari Bala M R, Python Full Stack Developer | [LinkedIn](https://linkedin.com/in/sabari-bala) | [GitHub](https://github.com/Sabari-bala)
