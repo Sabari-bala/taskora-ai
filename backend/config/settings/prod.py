@@ -1,8 +1,13 @@
 """Production settings."""
 
+from django.core.exceptions import ImproperlyConfigured
+
 from .base import *  # noqa: F403
 
 DEBUG = False
+
+if not SECRET_KEY or SECRET_KEY == "insecure-dev-key-change-me":
+    raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set to a secure value in production.")
 
 # ─── Security hardening ──────────────────────────────────────
 SECURE_SSL_REDIRECT = True
