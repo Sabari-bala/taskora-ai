@@ -56,7 +56,7 @@ export function Avatar({ src, name, size = 'md', className, ...props }) {
         sizes[size],
         className
       )}
-      style={{ backgroundColor: colours.bg, color: colours.text }}
+      style={{ backgroundColor: "#3b82f6", color: 'white',  backgroundColor: colours.bg, color: colours.text }}
       {...props}
     >
       {getInitials(name)}

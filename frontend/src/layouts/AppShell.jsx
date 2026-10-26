@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from '../components/layout/Sidebar';
 import { Topbar } from '../components/layout/Topbar';
@@ -10,18 +10,16 @@ function Shell() {
   const { open, closeNav } = useMobileNav();
   const location = useLocation();
 
-  /* Close mobile nav on route change */
   useEffect(() => {
     closeNav();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   return (
-    <div className="h-screen flex bg-paper-50 overflow-hidden">
-      {/* Desktop sidebar */}
+    <div className="h-[100dvh] w-full flex bg-paper-50 overflow-hidden">
+      {/* Desktop Sidebar */}
       <Sidebar className="hidden lg:flex" />
 
-      {/* Mobile sidebar drawer */}
+      {/* Mobile Drawer */}
       <div
         className={cn(
           'lg:hidden fixed inset-0 z-50 transition-opacity duration-200',
@@ -29,23 +27,23 @@ function Shell() {
         )}
         aria-hidden={!open}
       >
-        <div
-          className="absolute inset-0 bg-black/40"
-          onClick={closeNav}
-        />
+        <div className="absolute inset-0 bg-black/40" onClick={closeNav} />
+        
+        {/* The drawer container */}
         <div
           className={cn(
-            'absolute left-0 top-0 bottom-0 transition-transform duration-200 ease-out',
+            'absolute left-0 top-0 h-[100dvh] w-[280px] flex flex-col bg-paper-150 transition-transform duration-200 ease-out',
             open ? 'translate-x-0' : '-translate-x-full'
           )}
         >
-          <Sidebar className="flex" />
+          <Sidebar className="w-full h-full" />
         </div>
       </div>
 
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar />
-        <main className="flex-1 overflow-y-auto min-h-0">
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>
