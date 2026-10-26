@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: taskora
+      POSTGRES_PASSWORD: taskora
+      POSTGRES_DB: taskora
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.dev
+      - DJANGO_SECRET_KEY=dev-secret-key
+      - DJANGO_DEBUG=True
+      - DATABASE_URL=postgres://taskora:taskora@db:5432/taskora
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173
+      - CSRF_TRUSTED_ORIGINS=http://localhost:5173
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
