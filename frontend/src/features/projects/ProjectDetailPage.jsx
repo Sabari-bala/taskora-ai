@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor, TouchSensor,
   closestCorners,
   useSensor,
   useSensors,
@@ -39,7 +39,12 @@ export default function ProjectDetailPage() {
   const [detailTaskId, setDetailTaskId] = useState(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(MouseSensor, {
+      activationConstraint: { distance: 5 }, // Requires 5px movement for mouse
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 250, tolerance: 5 }, // 250ms hold to drag on mobile
+    })
   );
 
   if (loadingProject || loadingBoard) {
