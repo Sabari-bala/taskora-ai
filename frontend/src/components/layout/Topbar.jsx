@@ -44,7 +44,8 @@ export function Topbar() {
   const confirmLogout = async () => {
     setIsLogoutModalOpen(false);
     await logout();
-    navigate('/login');
+    // Force a hard redirect to the landing page
+    window.location.href = '/';
   };
 
   return (
