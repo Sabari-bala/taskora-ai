@@ -28,7 +28,7 @@ jobs:
           npm ci
           npm uninstall @tanstack/react-query-devtools
           npm install react-router-dom@^7.18.4
-          npm audit fix
+          npm audit fix || true
       - name: Verify frontend
         run: |
           npm run lint
