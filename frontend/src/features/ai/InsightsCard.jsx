@@ -70,24 +70,28 @@ export function InsightsCard({ projectId }) {
         <div className="p-4 text-sm text-ink-700 space-y-4 border-t border-paper-200">
           <div>
             <h4 className="font-medium text-ink-900 mb-1">Summary</h4>
-            <p>{result.summary}</p>
+            <p>{result.summary || 'The AI reviewed the project but did not generate a text summary.'}</p>
           </div>
-          {result.risks?.length > 0 && (
-            <div>
-              <h4 className="font-medium text-ink-900 mb-1 text-red-600">Risks</h4>
+          <div>
+            <h4 className="font-medium text-ink-900 mb-1 text-red-600">Risks</h4>
+            {result.risks?.length > 0 ? (
               <ul className="list-disc pl-4 space-y-1">
                 {result.risks.map((risk, i) => <li key={i}>{risk}</li>)}
               </ul>
-            </div>
-          )}
-          {result.priorities?.length > 0 && (
-            <div>
-              <h4 className="font-medium text-ink-900 mb-1">Next Priorities</h4>
+            ) : (
+              <p className="text-ink-500 italic">No significant risks identified.</p>
+            )}
+          </div>
+          <div>
+            <h4 className="font-medium text-ink-900 mb-1">Next Priorities</h4>
+            {result.priorities?.length > 0 ? (
               <ul className="list-disc pl-4 space-y-1">
                 {result.priorities.map((prio, i) => <li key={i}>{prio}</li>)}
               </ul>
-            </div>
-          )}
+            ) : (
+              <p className="text-ink-500 italic">No immediate priorities identified.</p>
+            )}
+          </div>
         </div>
       )}
     </div>
