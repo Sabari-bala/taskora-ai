@@ -1,6 +1,6 @@
 ﻿import { useState, useRef, useEffect } from 'react';
 import { Menu, Settings, LogOut, Moon, Sun, AlertTriangle } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Avatar } from '../ui/Avatar';
 import { useAuth } from '../../hooks/useAuth';
 import { useMobileNav } from './MobileNavContext';
@@ -13,7 +13,6 @@ export function Topbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const navigate = useNavigate();
 
   const [isDark, setIsDark] = useState(() => {
     return document.documentElement.classList.contains('dark');
