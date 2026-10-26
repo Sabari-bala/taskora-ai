@@ -20,3 +20,6 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 # Silent logging
 LOGGING["root"]["level"] = "CRITICAL"  # noqa: F405
+
+# Disable SSL redirect for pytest
+SECURE_SSL_REDIRECT = False
