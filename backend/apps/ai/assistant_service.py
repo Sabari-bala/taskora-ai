@@ -7,7 +7,9 @@ from .services import call_ai
 
 
 def _normalize_breakdown(data: dict) -> dict:
-    """Map common LLM aliases into canonical field names for breakdown."""
+    """
+CRITICAL: You MUST write a 1-2 sentence summary of the project health. You MUST list at least 2 specific, actionable priorities, even if the project is on track. Do NOT return empty strings or empty arrays.
+Map common LLM aliases into canonical field names for breakdown."""
     if not isinstance(data, dict):
         return data
 
