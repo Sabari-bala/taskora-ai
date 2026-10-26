@@ -91,4 +91,21 @@ class ProjectInsightsView(APIView):
         except AIError as exc:
             return _error_response(exc)
 
+                # GUARANTEED FALLBACK: If AI fails to generate summary or priorities, we build them from real DB tasks
+        if not insights.get("summary"):
+            insights["summary"] = "The project is active. AI could not generate a narrative summary, but the risks and priorities are listed below based on real project data."
+            
+        if not insights.get("priorities"):
+            from apps.tasks.models import Task
+            # Get the 2 most urgent open tasks
+            urgent = Task.objects.filter(
+                project=project, 
+                status__in=["todo", "in_progress", "review"]
+            ).order_by("due_date")[:2]
+            
+            fallback_priorities = [f"Resolve: {t.title}" for t in urgent]
+            if not fallback_priorities:
+                fallback_priorities = ["Review project backlog", "Plan next sprint goals"]
+            insights["priorities"] = fallback_priorities
+
         return Response({"insights": insights})
