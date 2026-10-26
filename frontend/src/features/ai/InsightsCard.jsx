@@ -84,12 +84,12 @@ export function InsightsCard({ projectId }) {
           </div>
           <div>
             <h4 className="font-medium text-ink-900 mb-1">Next Priorities</h4>
-            {result.priorities?.length > 0 ? (
+            {Array.isArray(result.priorities) && result.priorities.length > 0 ? (
               <ul className="list-disc pl-4 space-y-1">
                 {result.priorities.map((prio, i) => <li key={i}>{prio}</li>)}
               </ul>
             ) : (
-              <p className="text-ink-500 italic">No immediate priorities identified.</p>
+              <p className="text-ink-500 italic text-sm mt-1">No immediate priorities identified. The project looks on track!</p>
             )}
           </div>
         </div>
