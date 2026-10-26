@@ -91,6 +91,14 @@ class ProjectInsightsView(APIView):
         except AIError as exc:
             return _error_response(exc)
 
+        # MAP AI KEYS TO FRONTEND EXPECTED KEYS
+        if "headline" in insights and "summary" not in insights:
+            insights["summary"] = insights["headline"]
+        if "observations" in insights and "summary" not in insights:
+            insights["summary"] = " ".join(insights["observations"])
+        if "recommendations" in insights and "priorities" not in insights:
+            insights["priorities"] = insights["recommendations"]
+
         # GUARANTEED FALLBACK: If AI fails to generate summary or priorities, we build them from real DB tasks
         if not insights.get("summary"):
             insights["summary"] = "The project is active. AI could not generate a narrative summary, but the risks and priorities are listed below based on real project data."
