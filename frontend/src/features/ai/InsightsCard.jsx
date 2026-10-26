@@ -1,7 +1,6 @@
 ﻿import { useState } from 'react';
 import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { useProjectInsights } from './hooks';
-import { cn } from '../../lib/utils';
 
 export function InsightsCard({ projectId }) {
   const insights = useProjectInsights();
@@ -36,7 +35,7 @@ export function InsightsCard({ projectId }) {
         <div className="flex items-start gap-3">
           <Sparkles className="w-5 h-5 text-signal-500 shrink-0 mt-0.5" />
           <p className="text-sm text-ink-800">
-            Get an AI read on this project's progress, risks, and priorities.
+            Get an AI read on this project&apos;s progress, risks, and priorities.
           </p>
         </div>
         

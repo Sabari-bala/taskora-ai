@@ -204,6 +204,37 @@ class TestRefreshAndLogout:
         response = client.post(LOGOUT_URL)
         assert response.status_code == 401
 
+    def test_logout_fails_closed_when_blacklisting_fails(self, client, monkeypatch):
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        user = User.objects.create_user(
+            email="arun@example.com",
+            password="StrongPass!2026",
+        )
+        access = str(RefreshToken.for_user(user).access_token)
+        login_resp = client.post(
+            LOGIN_URL,
+            {"email": "arun@example.com", "password": "StrongPass!2026"},
+            content_type="application/json",
+        )
+        assert login_resp.status_code == 200
+
+        def fail_blacklist(self):
+            raise RuntimeError("simulated blacklist storage failure")
+
+        monkeypatch.setattr(RefreshToken, "blacklist", fail_blacklist)
+        response = client.post(
+            LOGOUT_URL,
+            HTTP_AUTHORIZATION=f"Bearer {access}",
+        )
+
+        assert response.status_code == 503
+        assert "safely revoke" in response.json()["detail"]
+        assert (
+            response.cookies[settings.REFRESH_COOKIE_NAME].value == ""
+            or response.cookies[settings.REFRESH_COOKIE_NAME]["max-age"] == 0
+        )
+
     def test_logout_clears_cookie_and_blacklists(self, client):
         from rest_framework_simplejwt.tokens import RefreshToken
 

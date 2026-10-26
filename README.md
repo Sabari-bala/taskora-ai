@@ -157,7 +157,7 @@ cd backend
 pytest --cov
 ```
 
-**200 tests passing with 94% backend coverage.** The suite covers authentication flows (rotation, refresh, blacklist), the role-by-action permission matrix, task workflows including Kanban reordering and activity logging, and AI failure modes (timeouts, malformed JSON).
+The backend suite contains 200+ automated tests covering authentication flows (rotation, refresh, blacklist), the role-by-action permission matrix, task workflows including Kanban reordering and activity logging, and AI failure modes (timeouts, malformed JSON). Run `pytest --cov` from `backend/` to generate a current coverage report; test counts and coverage may change as the suite evolves.
 
 GitHub Actions runs backend tests and Ruff, plus frontend linting and a production build, on pushes to `main` and pull requests targeting `main`.
 
