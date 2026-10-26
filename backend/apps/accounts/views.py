@@ -156,7 +156,11 @@ class RefreshView(APIView):
         try:
             old_refresh.blacklist()
         except Exception:
-            pass
+            logger.exception("Failed to blacklist refresh token during rotation")
+            return Response(
+                {"detail": "Could not safely refresh the session. Please log in again."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
 
         user_id = old_refresh.get("user_id")
         try:
