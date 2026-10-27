@@ -14,7 +14,7 @@ function Shell() {
 
   useEffect(() => {
     closeNav();
-  }, [location.pathname]);
+  }, [location.pathname, closeNav]);
 
   return (
     <div className="h-[100dvh] w-full flex bg-paper-50 overflow-hidden">
