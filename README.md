@@ -144,7 +144,9 @@ Never commit real secrets, API keys or database credentials.
 
 ## Engineering Notes
 
-- **Cross-domain authentication:** Browsers block third-party cookies between Vercel and Render, which logged users out on refresh. Fixed by proxying `/api` through Vercel rewrites so the HttpOnly refresh cookie is first-party. Verified in Chrome Incognito.
+- **- **Test-suite fix:** 100+ tests were failing because `SECURE_SSL_REDIRECT = True` was inherited from production settings. Solved with a global pytest `conftest.py` autouse fixture that overrides the setting at test runtime.
+- **Cross-domain authentication:** Browsers block third-party cookies between Vercel and Render. Fixed by proxying `/api` through Vercel rewrites so the HttpOnly refresh cookie is first-party, and added a catch-all rewrite so deep links survive a refresh.
+- **Demo account safety:** Password changes are blocked on the 5 seeded demo accounts via a backend guard, ensuring the public demo is never locked out by a visitor.** Browsers block third-party cookies between Vercel and Render, which logged users out on refresh. Fixed by proxying `/api` through Vercel rewrites so the HttpOnly refresh cookie is first-party. Verified in Chrome Incognito.
 - **SPA deep links:** Refreshing on a client-side route returned a Vercel 404. Fixed with a catch-all rewrite to `index.html`.
 - **React StrictMode:** Fixed duplicate requests in the authentication and email-verification flows caused by effects running twice in development.
 - **SQLite locking:** Resolved database-locking errors in development by enabling WAL mode.
@@ -157,7 +159,7 @@ cd backend
 pytest --cov
 ```
 
-**200 tests passing with 94% backend coverage.** The suite covers authentication flows (rotation, refresh, blacklist), the role-by-action permission matrix, task workflows including Kanban reordering and activity logging, and AI failure modes (timeouts, malformed JSON).
+**201 backend tests passing with 94% coverage, plus 1 frontend test via Vitest.** The suite covers authentication flows (rotation, refresh, blacklist), the role-by-action permission matrix, task workflows including Kanban reordering and activity logging, and AI failure modes (timeouts, malformed JSON).
 
 GitHub Actions runs backend tests and Ruff, plus frontend linting and a production build, on pushes to `main` and pull requests targeting `main`.
 
