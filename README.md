@@ -125,7 +125,7 @@ Taskora AI uses the **Groq API**, currently configured with the `openai/gpt-oss-
 
 ## Security
 
-- Django's configured password-hashing framework and password validators.
+- Argon2 as the primary password hasher, with Django's PBKDF2 hashers retained for compatibility and automatic upgrades on successful login.
 - JWT authentication with refresh-token rotation and blacklisting on logout.
 - Access tokens held in memory, not in browser local storage.
 - Refresh tokens stored in an HttpOnly cookie.
