@@ -194,8 +194,16 @@ class LogoutView(APIView):
         if raw_refresh:
             try:
                 RefreshToken(raw_refresh).blacklist()
-            except Exception:
+            except TokenError:
+                # Expired, malformed, or already-blacklisted tokens cannot be reused.
                 pass
+            except Exception:
+                logger.exception("Failed to blacklist refresh token during logout")
+                response = Response(
+                    {"detail": "Could not safely revoke the session. Please try again."},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+                return _clear_refresh_cookie(response)
 
         response = Response({"detail": "Logged out."}, status=status.HTTP_200_OK)
         return _clear_refresh_cookie(response)
