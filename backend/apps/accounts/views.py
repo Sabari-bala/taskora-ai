@@ -235,6 +235,17 @@ class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        # Demo protection: prevent password changes on demo accounts
+        DEMO_EMAILS = {
+            "sabari@taskora.local", "priya@taskora.local",
+            "rahul@taskora.local", "arjun@taskora.local", "sneha@taskora.local",
+        }
+        if request.user.email in DEMO_EMAILS:
+            return Response(
+                {"detail": "Password changes are disabled for demo accounts."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         serializer = PasswordChangeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
