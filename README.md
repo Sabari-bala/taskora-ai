@@ -125,7 +125,7 @@ Taskora AI uses the **Groq API**, currently configured with the `openai/gpt-oss-
 
 ## Security
 
-- Argon2 password hashing.
+- Django's configured password-hashing framework and password validators.
 - JWT authentication with refresh-token rotation and blacklisting on logout.
 - Access tokens held in memory, not in browser local storage.
 - Refresh tokens stored in an HttpOnly cookie.
@@ -144,13 +144,13 @@ Never commit real secrets, API keys or database credentials.
 
 ## Engineering Notes
 
-- **- **Test-suite fix:** 100+ tests were failing because `SECURE_SSL_REDIRECT = True` was inherited from production settings. Solved with a global pytest `conftest.py` autouse fixture that overrides the setting at test runtime.
-- **Cross-domain authentication:** Browsers block third-party cookies between Vercel and Render. Fixed by proxying `/api` through Vercel rewrites so the HttpOnly refresh cookie is first-party, and added a catch-all rewrite so deep links survive a refresh.
-- **Demo account safety:** Password changes are blocked on the 5 seeded demo accounts via a backend guard, ensuring the public demo is never locked out by a visitor.** Browsers block third-party cookies between Vercel and Render, which logged users out on refresh. Fixed by proxying `/api` through Vercel rewrites so the HttpOnly refresh cookie is first-party. Verified in Chrome Incognito.
-- **SPA deep links:** Refreshing on a client-side route returned a Vercel 404. Fixed with a catch-all rewrite to `index.html`.
-- **React StrictMode:** Fixed duplicate requests in the authentication and email-verification flows caused by effects running twice in development.
-- **SQLite locking:** Resolved database-locking errors in development by enabling WAL mode.
-- **AI output validation:** Added normalization and schema validation to handle inconsistent model responses safely.
+- **Test-suite configuration:** More than 100 tests initially failed because `SECURE_SSL_REDIRECT = True` was inherited from production settings. A pytest fixture now overrides the setting during tests.
+- **Cross-domain authentication:** Browsers can block third-party cookies between Vercel and Render. Proxying `/api` through Vercel makes the HttpOnly refresh cookie first-party.
+- **Demo account safety:** Password changes are blocked for the five seeded demo accounts so visitors cannot lock other users out of the shared demo.
+- **SPA deep links:** A catch-all Vercel rewrite serves `index.html` when users refresh client-side routes.
+- **React StrictMode:** Duplicate requests in authentication flows during development were addressed.
+- **SQLite locking:** WAL mode and a busy timeout reduce database-locking errors during local development.
+- **AI output validation:** AI responses are normalized and checked against a JSON Schema before they can be reviewed and committed.
 
 ## Testing and Quality
 
