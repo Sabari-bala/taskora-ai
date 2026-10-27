@@ -5,6 +5,7 @@ import { useProjects } from '../../features/projects/hooks';
 import { useTasks } from '../../features/tasks/hooks';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { cn } from '../../lib/utils';
+import { openCommandMenu } from './CommandMenu';
 
 const EMPTY_ARRAY = [];
 

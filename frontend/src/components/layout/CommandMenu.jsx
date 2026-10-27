@@ -5,6 +5,10 @@ import { Home, CheckSquare, Folder, Users, Settings, Plus, Sparkles, Search } fr
 import { useProjects } from '../../features/projects/hooks';
 import { useWorkspace } from '../../hooks/useWorkspace';
 
+export function openCommandMenu() {
+  window.dispatchEvent(new Event('taskora:toggle-command-menu'));
+}
+
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -21,7 +25,12 @@ export function CommandMenu() {
       if (e.key === 'Escape') setOpen(false);
     };
     document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
+    const handler = () => setOpen((v) => !v);
+    window.addEventListener('taskora:toggle-command-menu', handler);
+    return () => {
+      document.removeEventListener('keydown', down);
+      window.removeEventListener('taskora:toggle-command-menu', handler);
+    };
   }, []);
 
   const runCommand = (fn) => { setOpen(false); fn(); };
@@ -66,7 +75,7 @@ export function CommandMenu() {
 
           <Command.Group heading="Actions" className={groupHeadingClass}>
             <Command.Item onSelect={() => runCommand(() => navigate('/projects'))} className={itemClass}><Plus className="w-4 h-4 text-ink-400 shrink-0" /> Create new project</Command.Item>
-            <Command.Item onSelect={() => runCommand(() => navigate('/dashboard'))} className={itemClass}><Sparkles className="w-4 h-4 text-signal-500 shrink-0" /> Plan with AI</Command.Item>
+            <Command.Item onSelect={() => runCommand(() => { navigate('/dashboard'); setTimeout(() => { const buttons = document.querySelectorAll('button'); for (const b of buttons) { const text = (b.textContent || '').trim(); if (text === 'Plan with AI' || text.includes('Plan with')) { b.click(); return; } } }, 350); })} className={itemClass}><Sparkles className="w-4 h-4 text-signal-500 shrink-0" /> Plan with AI</Command.Item>
           </Command.Group>
         </Command.List>
       </Command>

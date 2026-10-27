@@ -2,6 +2,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sidebar } from '../components/layout/Sidebar';
+import { CommandMenu } from '../components/layout/CommandMenu';
 import { Topbar } from '../components/layout/Topbar';
 import { WorkspaceProvider } from '../context/WorkspaceContext';
 import { MobileNavProvider, useMobileNav } from '../components/layout/MobileNavContext';
@@ -59,6 +60,8 @@ function Shell() {
           </AnimatePresence>
         </main>
       </div>
+
+      <CommandMenu />
     </div>
   );
 }
