@@ -6,6 +6,7 @@ import { queryClient } from './lib/queryClient';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './components/ui/Toast';
+import { Toaster } from 'sonner';
 import App from './App';
 import './styles/globals.css';
 
@@ -16,7 +17,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <BrowserRouter>
           <AuthProvider>
             <ToastProvider>
-              <App />
+              <>
+        <Toaster position="bottom-right" richColors />
+        <App />
+      </>
             </ToastProvider>
           </AuthProvider>
         </BrowserRouter>
