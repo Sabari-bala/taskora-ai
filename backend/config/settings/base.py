@@ -109,6 +109,16 @@ if "sqlite3" in DATABASES["default"].get("ENGINE", ""):
     DATABASES["default"]["OPTIONS"]["timeout"] = 20
     DATABASES["default"]["OPTIONS"]["init_command"] = "PRAGMA journal_mode=WAL;"
 
+# ─── Password hashers ─────────────────────────────────────────
+# Argon2 is memory-hard and resistant to GPU/ASIC attacks.
+# Django will auto-upgrade PBKDF2 hashes to Argon2 on next successful login.
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+]
+
 # ─── Password validation ────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
