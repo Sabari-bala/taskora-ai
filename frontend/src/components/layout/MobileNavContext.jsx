@@ -1,14 +1,18 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useMemo, useCallback } from 'react';
 
 const MobileNavContext = createContext(null);
 
 export function MobileNavProvider({ children }) {
   const [open, setOpen] = useState(false);
-  const value = {
-    open,
-    openNav: () => setOpen(true),
-    closeNav: () => setOpen(false),
-  };
+
+  const openNav = useCallback(() => setOpen(true), []);
+  const closeNav = useCallback(() => setOpen(false), []);
+
+  const value = useMemo(
+    () => ({ open, openNav, closeNav }),
+    [open, openNav, closeNav]
+  );
+
   return (
     <MobileNavContext.Provider value={value}>
       {children}

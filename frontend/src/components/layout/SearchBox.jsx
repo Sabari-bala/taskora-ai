@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Folder, ListTodo, Home, CheckSquare } from 'lucide-react';
 import { useProjects } from '../../features/projects/hooks';
@@ -118,7 +118,7 @@ export function SearchBox() {
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         onKeyDown={handleKeyDown}
-        placeholder="Search tasks, projects…"
+        placeholder="Search tasks, projectsâ€¦"
         aria-label="Search"
         aria-expanded={open}
         aria-controls="search-suggestions"
@@ -208,3 +208,4 @@ function Row({ icon: Icon, highlighted, onClick, onMouseEnter, children }) {
     </button>
   );
 }
+
