@@ -31,7 +31,7 @@ export function InsightsCard({ projectId }) {
     }
 
     return (
-      <div className="rounded-xl border border-paper-200 bg-signal-50 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="w-full overflow-hidden rounded-xl border border-paper-200 bg-signal-50 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3">
           <Sparkles className="w-5 h-5 text-signal-500 shrink-0 mt-0.5" />
           <p className="text-sm text-ink-800">

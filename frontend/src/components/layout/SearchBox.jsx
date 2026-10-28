@@ -118,12 +118,24 @@ export function SearchBox() {
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         onKeyDown={handleKeyDown}
-        placeholder="Search tasks, projectsâ€¦"
+        placeholder="Search tasks, projects..."
         aria-label="Search"
         aria-expanded={open}
         aria-controls="search-suggestions"
-        className="w-full h-9 rounded-md border border-paper-300 bg-paper-50 pl-9 pr-3 text-body-sm text-ink-800 placeholder:text-ink-500 hover:border-paper-400 focus:outline-none focus:ring-2 focus:ring-signal-500 focus:border-signal-500 transition-colors"
+        className="w-full h-9 rounded-md border border-paper-300 bg-paper-50 pl-9 pr-16 text-body-sm text-ink-800 placeholder:text-ink-500 hover:border-paper-400 focus:outline-none focus:ring-2 focus:ring-signal-500 focus:border-signal-500 transition-colors"
       />
+
+      {/* Ctrl+K hint badge */}
+      <button
+        type="button"
+        onClick={() => { inputRef.current?.focus(); setOpen(true); }}
+        aria-label="Open search (Ctrl+K)"
+        tabIndex={-1}
+        className="flex items-center gap-0.5 absolute right-2 top-1/2 -translate-y-1/2 z-10 text-[10px] font-mono text-ink-500 bg-paper-150 border border-paper-300 rounded px-1.5 py-0.5 hover:bg-paper-100 hover:text-ink-700 transition-colors"
+      >
+        <kbd className="font-sans">Ctrl</kbd>
+        <kbd className="font-sans">K</kbd>
+      </button>
 
       {open && (
         <div
