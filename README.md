@@ -7,7 +7,6 @@
 [![Backend](https://img.shields.io/badge/Backend-Django%205-092E20?style=for-the-badge&logo=django)](https://taskora-api-df40.onrender.com/api/v1/health/)
 [![Frontend](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)](https://taskora-ai-delta.vercel.app)
 
-<!-- Add screenshots here: Kanban board, AI planner review modal, Viewer (read-only) view -->
 
 **An AI-assisted project management platform where AI proposes and humans approve.**
 
@@ -161,7 +160,7 @@ pytest --cov
 
 **201 backend tests passing with 94% coverage, plus 1 frontend test via Vitest.** The suite covers authentication flows (rotation, refresh, blacklist), the role-by-action permission matrix, task workflows including Kanban reordering and activity logging, and AI failure modes (timeouts, malformed JSON).
 
-GitHub Actions runs backend tests and Ruff, plus frontend linting and a production build, on pushes to `main` and pull requests targeting `main`.
+GitHub Actions runs backend tests and Ruff, plus frontend linting, Vitest tests, and a production build, on pushes to `main` and `feature/**` branches and pull requests targeting `main`.
 
 ## Local Development
 
@@ -286,4 +285,3 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 ---
 
 **Author:** Sabari Bala M R, Python Full Stack Developer | [LinkedIn](https://linkedin.com/in/sabari-bala) | [GitHub](https://github.com/Sabari-bala)
-# Auto-deploy test 2026-10-27 13:17:41
