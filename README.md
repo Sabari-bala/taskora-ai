@@ -90,7 +90,6 @@ Password for all accounts: `StrongPass!2026`
 | CI/CD | GitHub Actions (Node 22), Render Deploy Hook, Vercel |
 | AI integration | Groq API, `httpx`, JSON Schema validation |
 | API documentation | drf-spectacular |
-| Testing | pytest, pytest-django, Factory Boy |
 | Code quality | Ruff, Black, ESLint, Prettier, pre-commit, GitHub Actions |
 | Deployment | Render (backend), Vercel (frontend) |
 
