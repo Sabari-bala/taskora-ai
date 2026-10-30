@@ -36,6 +36,10 @@ Password for all accounts: `StrongPass!2026`
 
 > **Public demo:** Other visitors can edit or delete demo data. Do not enter personal or confidential information.
 
+> **One-click demo login:** The login page has buttons for each role (Owner, Manager, Member, Viewer). Click any to log in instantly — no typing needed.
+
+> **Demo password protection:** Password changes are disabled for demo accounts, so the demo can never be locked out by a visitor.
+
 ## Key Features
 
 ### Project and task management
@@ -78,6 +82,9 @@ Password for all accounts: `StrongPass!2026`
 | Frontend | React 18, Vite, React Router |
 | Styling and UI | Tailwind CSS, Radix UI, Lucide React |
 | Client data | TanStack Query, Axios |
+| UI polish | Framer Motion (page transitions), Sonner (toast notifications) |
+| Testing | Pytest + Factory Boy (backend), Vitest + React Testing Library (frontend) |
+| CI/CD | GitHub Actions (Node 22), Render Deploy Hook, Vercel |
 | Kanban | dnd-kit |
 | Database | PostgreSQL (Neon) in production, SQLite for development |
 | Authentication | SimpleJWT, refresh-token rotation and blacklist |
@@ -143,7 +150,7 @@ Never commit real secrets, API keys or database credentials.
 
 ## Engineering Notes
 
-- **Test-suite configuration:** More than 100 tests initially failed because `SECURE_SSL_REDIRECT = True` was inherited from production settings. A pytest fixture now overrides the setting during tests.
+- **Test-suite configuration:** More than 202 tests (201 backend + 1 frontend) initially failed because `SECURE_SSL_REDIRECT = True` was inherited from production settings. A pytest fixture now overrides the setting during tests.
 - **Cross-domain authentication:** Browsers can block third-party cookies between Vercel and Render. Proxying `/api` through Vercel makes the HttpOnly refresh cookie first-party.
 - **Demo account safety:** Password changes are blocked for the five seeded demo accounts so visitors cannot lock other users out of the shared demo.
 - **SPA deep links:** A catch-all Vercel rewrite serves `index.html` when users refresh client-side routes.
