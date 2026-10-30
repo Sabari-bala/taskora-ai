@@ -1,0 +1,15 @@
+﻿name: Keep Render & Neon Alive
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Every 5 minutes
+  workflow_dispatch:      # Allows manual trigger for testing
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          curl -f -s https://taskora-api-df40.onrender.com/api/v1/health/ > /dev/null
+          echo "✅ Backend pinged successfully"
