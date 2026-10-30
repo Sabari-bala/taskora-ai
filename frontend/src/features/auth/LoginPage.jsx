@@ -5,6 +5,15 @@ import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
 import { useAuth } from '../../hooks/useAuth';
 
+const DEMO_USERS = [
+  { role: 'Owner', email: 'sabari@taskora.local' },
+  { role: 'Manager', email: 'priya@taskora.local' },
+  { role: 'Member (Rahul)', email: 'rahul@taskora.local' },
+  { role: 'Member (Arjun)', email: 'arjun@taskora.local' },
+  { role: 'Viewer', email: 'sneha@taskora.local' },
+];
+const DEMO_PASSWORD = 'StrongPass!2026';
+
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,7 +31,7 @@ export function LoginPage() {
     setError('');
     setSubmitting(true);
     try {
-      await login({ email, password });
+      await login({ email: email.trim(), password: password.trim() });
       navigate(from, { replace: true });
     } catch (err) {
       const detail =
@@ -81,6 +90,35 @@ export function LoginPage() {
           Sign in
         </Button>
       </form>
+
+      <div className="mt-6 border-t border-paper-300 pt-4">
+        <p className="text-xs text-center text-ink-500 mb-3 font-medium">Quick Demo Login</p>
+        <div className="grid grid-cols-2 gap-2">
+          {DEMO_USERS.map((u) => (
+            <button
+              key={u.email}
+              type="button"
+              onClick={async () => {
+                setEmail(u.email);
+                setPassword(DEMO_PASSWORD);
+                setSubmitting(true);
+                try {
+                  await login({ email: u.email, password: DEMO_PASSWORD });
+                  navigate(from, { replace: true });
+                } catch (err) {
+                  setError(err?.response?.data?.detail || 'Demo login failed.');
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              className="px-2 py-1.5 text-xs font-medium text-ink-700 bg-paper-100 hover:bg-paper-200 border border-paper-300 rounded-md transition-colors text-center"
+            >
+              {u.role}
+            </button>
+          ))}
+        </div>
+      </div>
+
 
       <p className="mt-6 text-center text-body-sm text-ink-600">
         New to Taskora?{' '}
