@@ -68,4 +68,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render Deploy Hook
-        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+        run: |
+          HTTP_CODE=$(curl -sSL -X POST -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_DEPLOY_HOOK_URL }}")
+          echo "Render responded with HTTP $HTTP_CODE"
+          if [ "$HTTP_CODE" -eq 409 ]; then
+            echo "::warning::Render service is suspended (quota exhausted). Deploy skipped. Will retry next push after quota resets."
+            exit 0
+          fi
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo "::error::Render deploy hook failed with HTTP $HTTP_CODE"
+            exit 1
+          fi
+          echo "✅ Deploy triggered successfully"
