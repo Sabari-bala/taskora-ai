@@ -20,7 +20,7 @@ AI is part of the product workflow, not a standalone chatbot. Generated plans an
 - **Backend health check:** https://taskora-api-df40.onrender.com/api/v1/health/
 - **User handbook:** [docs/HANDBOOK.md](docs/HANDBOOK.md)
 
-> **Cold start:** The backend runs on Render's free tier. If the app has not been visited recently, the first request may take 20-30 seconds while the server wakes up.
+> **Hosting note:** The backend (Render) and database (Neon) run on free tiers. The first request after inactivity can take about a minute while the service wakes up. If the monthly free-tier allowance is used up, the service is suspended until the start of the next month and the live demo may be unavailable. The code, tests and local setup instructions in this repository work independently of the live deployment.
 
 ### Demo accounts
 
@@ -245,6 +245,7 @@ Open the local URL printed by Vite.
 - No signup email verification or password-reset emails.
 - No file attachments.
 - Notifications poll periodically instead of using WebSockets.
+- Hosted on free tiers (Render and Neon): cold starts, and possible suspension when monthly free limits are reached.
 
 ## Project Structure
 
